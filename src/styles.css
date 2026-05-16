@@ -5,17 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * SoundArena 聲擂 — 深夜電台 Design System
+ * 深酒紅底 + 暖橘高光 + 米黃文字。所有顏色 oklch。
  */
 
 @theme inline {
@@ -24,8 +15,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -45,100 +34,147 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --color-stage: var(--stage);
+  --color-stage-foreground: var(--stage-foreground);
+  --color-ember: var(--ember);
+  --color-ember-glow: var(--ember-glow);
+  --color-cream: var(--cream);
+  --color-live: var(--live);
+  --font-display: "Noto Serif TC", "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Noto Sans TC", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --radius: 0.75rem;
+
+  /* 深夜底色:深酒紅黑 */
+  --background: oklch(0.13 0.025 25);
+  --foreground: oklch(0.94 0.025 75);
+
+  --card: oklch(0.18 0.035 22);
+  --card-foreground: oklch(0.94 0.025 75);
+
+  --popover: oklch(0.16 0.03 22);
+  --popover-foreground: oklch(0.94 0.025 75);
+
+  /* 暖橘主色 (#ff6b35 漸層) */
+  --primary: oklch(0.7 0.18 45);
+  --primary-foreground: oklch(0.15 0.02 25);
+
+  --secondary: oklch(0.25 0.04 22);
+  --secondary-foreground: oklch(0.94 0.025 75);
+
+  --muted: oklch(0.22 0.025 22);
+  --muted-foreground: oklch(0.7 0.03 65);
+
+  --accent: oklch(0.35 0.09 35);
+  --accent-foreground: oklch(0.95 0.02 75);
+
+  --destructive: oklch(0.6 0.22 22);
+  --destructive-foreground: oklch(0.98 0.01 75);
+
+  --border: oklch(0.28 0.04 25);
+  --input: oklch(0.22 0.03 22);
+  --ring: oklch(0.7 0.18 45);
+
+  /* 客製化 tokens */
+  --stage: oklch(0.1 0.02 22);            /* 最深舞台底 */
+  --stage-foreground: oklch(0.96 0.02 70);
+  --ember: oklch(0.7 0.18 45);             /* 暖橘 */
+  --ember-glow: oklch(0.78 0.2 55);        /* 高光 */
+  --cream: oklch(0.93 0.03 80);            /* 米黃 */
+  --live: oklch(0.68 0.24 18);             /* 直播紅 */
+
+  /* 漸層與陰影 */
+  --gradient-stage: radial-gradient(ellipse at top, oklch(0.22 0.05 28) 0%, oklch(0.1 0.02 22) 70%);
+  --gradient-ember: linear-gradient(135deg, oklch(0.7 0.18 45) 0%, oklch(0.62 0.2 28) 100%);
+  --gradient-spotlight: radial-gradient(circle at 50% 0%, oklch(0.4 0.12 40 / 0.4) 0%, transparent 60%);
+  --shadow-ember: 0 10px 40px -10px oklch(0.62 0.22 35 / 0.5);
+  --shadow-stage: 0 20px 60px -20px oklch(0.05 0.02 22 / 0.8);
+  --glow-live: 0 0 20px oklch(0.68 0.24 18 / 0.6);
+
+  /* 動畫 */
+  --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* same — 預設即為深夜 */
 }
 
 @layer base {
-  * {
-    border-color: var(--color-border);
+  * { border-color: var(--color-border); }
+
+  html, body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.3 0.08 32 / 0.4), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 100%, oklch(0.25 0.06 22 / 0.3), transparent);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
+
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
+
+  /* 直播脈動 */
+  @keyframes live-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 oklch(0.68 0.24 18 / 0.7); }
+    50% { opacity: 0.85; box-shadow: 0 0 0 8px oklch(0.68 0.24 18 / 0); }
+  }
+  .live-dot { animation: live-pulse 1.8s ease-in-out infinite; }
+
+  /* 掃光高光 */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .text-shimmer {
+    background: linear-gradient(90deg, var(--ember) 0%, var(--ember-glow) 50%, var(--ember) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 4s linear infinite;
+  }
+
+  /* 卡片懸停 */
+  .hover-rise {
+    transition: transform 300ms var(--transition-smooth), box-shadow 300ms var(--transition-smooth), border-color 300ms var(--transition-smooth);
+  }
+  .hover-rise:hover {
+    transform: translateY(-2px);
+    border-color: oklch(0.5 0.12 40);
+    box-shadow: var(--shadow-ember);
+  }
+
+  /* 細捲軸 */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: oklch(0.13 0.02 22); }
+  ::-webkit-scrollbar-thumb { background: oklch(0.3 0.05 30); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: oklch(0.4 0.08 35); }
+}
+
+@layer utilities {
+  .bg-stage { background: var(--stage); }
+  .bg-gradient-stage { background: var(--gradient-stage); }
+  .bg-gradient-ember { background: var(--gradient-ember); }
+  .bg-spotlight { background: var(--gradient-spotlight); }
+  .shadow-ember { box-shadow: var(--shadow-ember); }
+  .shadow-stage { box-shadow: var(--shadow-stage); }
+  .glow-live { box-shadow: var(--glow-live); }
+  .text-ember { color: var(--ember); }
+  .text-cream { color: var(--cream); }
+  .border-ember { border-color: var(--ember); }
+  .bg-ember { background-color: var(--ember); }
+  .bg-live { background-color: var(--live); }
+
+  /* 安全範圍 padding (含 mobile nav 高度) */
+  .pb-safe-nav { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5rem); }
+  @media (min-width: 768px) { .pb-safe-nav { padding-bottom: 2rem; } }
 }
