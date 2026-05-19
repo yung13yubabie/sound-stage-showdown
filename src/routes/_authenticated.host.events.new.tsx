@@ -4,7 +4,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
-import { validateMusicUrl } from "@/lib/url-validator";
+import { validateMusicUrl, toYouTubeEmbed } from "@/lib/url-validator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -78,7 +78,7 @@ function NewEvent() {
     if (p.data.youtube_url) {
       const v = validateMusicUrl(p.data.youtube_url);
       if (!v.ok) { toast.error(v.error); return; }
-      embedUrl = v.embedUrl ?? null;
+      embedUrl = toYouTubeEmbed(p.data.youtube_url);
     }
     setLoading(true);
     try {
