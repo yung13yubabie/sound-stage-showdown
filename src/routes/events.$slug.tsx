@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { Button } from "@/components/ui/button";
 import { eventTypeMeta } from "@/components/EventCard";
+import { EventSubmitButton } from "@/components/EventSubmitButton";
 
 export const Route = createFileRoute("/events/$slug")({
   component: EventDetail,
@@ -83,11 +84,7 @@ function EventDetail() {
           <p className="mt-2 text-sm text-muted-foreground">主辦人尚未發布公告。</p>
         </div>
         <aside className="space-y-3">
-          {event.allow_song_submission && (
-            <Button asChild className="w-full bg-gradient-ember text-primary-foreground">
-              <Link to="/tracks/new">投稿作品</Link>
-            </Button>
-          )}
+          {event.allow_song_submission && <EventSubmitButton eventId={event.id} />}
           {event.related_competition_id && (
             <Button asChild variant="outline" className="w-full">
               <Link to="/competitions"><Trophy className="mr-2 h-4 w-4" />查看相關比賽</Link>

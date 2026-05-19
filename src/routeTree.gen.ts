@@ -23,6 +23,9 @@ import { Route as EventsSlugRouteImport } from './routes/events.$slug'
 import { Route as CompetitionsSlugRouteImport } from './routes/competitions.$slug'
 import { Route as AuthenticatedHostRouteImport } from './routes/_authenticated.host'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedHostEventsNewRouteImport } from './routes/_authenticated.host.events.new'
+import { Route as AuthenticatedHostCompetitionsNewRouteImport } from './routes/_authenticated.host.competitions.new'
+import { Route as AuthenticatedHostCompetitionsSlugRoundsRouteImport } from './routes/_authenticated.host.competitions.$slug.rounds'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -93,6 +96,24 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedHostEventsNewRoute =
+  AuthenticatedHostEventsNewRouteImport.update({
+    id: '/events/new',
+    path: '/events/new',
+    getParentRoute: () => AuthenticatedHostRoute,
+  } as any)
+const AuthenticatedHostCompetitionsNewRoute =
+  AuthenticatedHostCompetitionsNewRouteImport.update({
+    id: '/competitions/new',
+    path: '/competitions/new',
+    getParentRoute: () => AuthenticatedHostRoute,
+  } as any)
+const AuthenticatedHostCompetitionsSlugRoundsRoute =
+  AuthenticatedHostCompetitionsSlugRoundsRouteImport.update({
+    id: '/competitions/$slug/rounds',
+    path: '/competitions/$slug/rounds',
+    getParentRoute: () => AuthenticatedHostRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -102,12 +123,15 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/host': typeof AuthenticatedHostRoute
+  '/host': typeof AuthenticatedHostRouteWithChildren
   '/competitions/$slug': typeof CompetitionsSlugRoute
   '/events/$slug': typeof EventsSlugRoute
   '/tracks/$slug': typeof TracksSlugRoute
   '/tracks/new': typeof TracksNewRoute
   '/u/$username': typeof UUsernameRoute
+  '/host/competitions/new': typeof AuthenticatedHostCompetitionsNewRoute
+  '/host/events/new': typeof AuthenticatedHostEventsNewRoute
+  '/host/competitions/$slug/rounds': typeof AuthenticatedHostCompetitionsSlugRoundsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,12 +141,15 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/host': typeof AuthenticatedHostRoute
+  '/host': typeof AuthenticatedHostRouteWithChildren
   '/competitions/$slug': typeof CompetitionsSlugRoute
   '/events/$slug': typeof EventsSlugRoute
   '/tracks/$slug': typeof TracksSlugRoute
   '/tracks/new': typeof TracksNewRoute
   '/u/$username': typeof UUsernameRoute
+  '/host/competitions/new': typeof AuthenticatedHostCompetitionsNewRoute
+  '/host/events/new': typeof AuthenticatedHostEventsNewRoute
+  '/host/competitions/$slug/rounds': typeof AuthenticatedHostCompetitionsSlugRoundsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,12 +161,15 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/host': typeof AuthenticatedHostRoute
+  '/_authenticated/host': typeof AuthenticatedHostRouteWithChildren
   '/competitions/$slug': typeof CompetitionsSlugRoute
   '/events/$slug': typeof EventsSlugRoute
   '/tracks/$slug': typeof TracksSlugRoute
   '/tracks/new': typeof TracksNewRoute
   '/u/$username': typeof UUsernameRoute
+  '/_authenticated/host/competitions/new': typeof AuthenticatedHostCompetitionsNewRoute
+  '/_authenticated/host/events/new': typeof AuthenticatedHostEventsNewRoute
+  '/_authenticated/host/competitions/$slug/rounds': typeof AuthenticatedHostCompetitionsSlugRoundsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -157,6 +187,9 @@ export interface FileRouteTypes {
     | '/tracks/$slug'
     | '/tracks/new'
     | '/u/$username'
+    | '/host/competitions/new'
+    | '/host/events/new'
+    | '/host/competitions/$slug/rounds'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -172,6 +205,9 @@ export interface FileRouteTypes {
     | '/tracks/$slug'
     | '/tracks/new'
     | '/u/$username'
+    | '/host/competitions/new'
+    | '/host/events/new'
+    | '/host/competitions/$slug/rounds'
   id:
     | '__root__'
     | '/'
@@ -188,6 +224,9 @@ export interface FileRouteTypes {
     | '/tracks/$slug'
     | '/tracks/new'
     | '/u/$username'
+    | '/_authenticated/host/competitions/new'
+    | '/_authenticated/host/events/new'
+    | '/_authenticated/host/competitions/$slug/rounds'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -303,17 +342,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/host/events/new': {
+      id: '/_authenticated/host/events/new'
+      path: '/events/new'
+      fullPath: '/host/events/new'
+      preLoaderRoute: typeof AuthenticatedHostEventsNewRouteImport
+      parentRoute: typeof AuthenticatedHostRoute
+    }
+    '/_authenticated/host/competitions/new': {
+      id: '/_authenticated/host/competitions/new'
+      path: '/competitions/new'
+      fullPath: '/host/competitions/new'
+      preLoaderRoute: typeof AuthenticatedHostCompetitionsNewRouteImport
+      parentRoute: typeof AuthenticatedHostRoute
+    }
+    '/_authenticated/host/competitions/$slug/rounds': {
+      id: '/_authenticated/host/competitions/$slug/rounds'
+      path: '/competitions/$slug/rounds'
+      fullPath: '/host/competitions/$slug/rounds'
+      preLoaderRoute: typeof AuthenticatedHostCompetitionsSlugRoundsRouteImport
+      parentRoute: typeof AuthenticatedHostRoute
+    }
   }
 }
 
+interface AuthenticatedHostRouteChildren {
+  AuthenticatedHostCompetitionsNewRoute: typeof AuthenticatedHostCompetitionsNewRoute
+  AuthenticatedHostEventsNewRoute: typeof AuthenticatedHostEventsNewRoute
+  AuthenticatedHostCompetitionsSlugRoundsRoute: typeof AuthenticatedHostCompetitionsSlugRoundsRoute
+}
+
+const AuthenticatedHostRouteChildren: AuthenticatedHostRouteChildren = {
+  AuthenticatedHostCompetitionsNewRoute: AuthenticatedHostCompetitionsNewRoute,
+  AuthenticatedHostEventsNewRoute: AuthenticatedHostEventsNewRoute,
+  AuthenticatedHostCompetitionsSlugRoundsRoute:
+    AuthenticatedHostCompetitionsSlugRoundsRoute,
+}
+
+const AuthenticatedHostRouteWithChildren =
+  AuthenticatedHostRoute._addFileChildren(AuthenticatedHostRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedHostRoute: typeof AuthenticatedHostRoute
+  AuthenticatedHostRoute: typeof AuthenticatedHostRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedHostRoute: AuthenticatedHostRoute,
+  AuthenticatedHostRoute: AuthenticatedHostRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

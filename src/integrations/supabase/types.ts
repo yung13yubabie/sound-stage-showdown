@@ -760,6 +760,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_round_entries: {
+        Args: { _round_id: string }
+        Returns: {
+          anonymous_code: string
+          competition_id: string
+          creator_avatar_url: string
+          creator_display_name: string
+          creator_id: string
+          creator_username: string
+          final_score: number
+          id: string
+          public_vote_count: number
+          rank: number
+          round_id: string
+          seed_number: number
+          status: Database["public"]["Enums"]["round_entry_status"]
+          track_cover_url: string
+          track_embed_url: string
+          track_id: string
+          track_slug: string
+          track_source: Database["public"]["Enums"]["track_source"]
+          track_source_url: string
+          track_title: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

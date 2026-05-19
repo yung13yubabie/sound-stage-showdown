@@ -4,6 +4,7 @@ import { ArrowLeft, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Countdown } from "@/components/Countdown";
 import { StatusBadge } from "@/components/StatusBadge";
+import { RoundPanel } from "@/components/RoundPanel";
 
 export const Route = createFileRoute("/competitions/$slug")({
   component: CompetitionDetail,
@@ -75,23 +76,8 @@ function CompetitionDetail() {
       <section className="mt-8">
         <h2 className="mb-4 font-display text-2xl text-cream">輪次時間軸</h2>
         {rounds && rounds.length > 0 ? (
-          <ol className="space-y-3">
-            {rounds.map((r) => (
-              <li key={r.id} className="rounded-xl border border-border bg-card p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs uppercase tracking-widest text-ember">第 {r.round_number} 輪</span>
-                    <h3 className="font-display text-lg text-cream">{r.title}</h3>
-                  </div>
-                  <StatusBadge variant={r.status === "voting_anonymous" || r.status === "voting_public" ? "voting" : r.status === "completed" ? "ended" : "scheduled"} label={r.status} />
-                </div>
-                {r.description && <p className="mt-2 text-sm text-muted-foreground">{r.description}</p>}
-                <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-2">
-                  <div>投稿:{r.submission_start_at?.slice(0, 16) ?? "—"} → {r.submission_end_at?.slice(0, 16) ?? "—"}</div>
-                  <div>投票:{r.voting_start_at?.slice(0, 16) ?? "—"} → {r.voting_end_at?.slice(0, 16) ?? "—"}</div>
-                </div>
-              </li>
-            ))}
+          <ol className="space-y-4">
+            {rounds.map((r) => <RoundPanel key={r.id} round={r} competitionId={competition.id} />)}
           </ol>
         ) : (
           <p className="rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
