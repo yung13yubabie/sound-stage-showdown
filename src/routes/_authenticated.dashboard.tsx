@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrackCard } from "@/components/TrackCard";
 import { Button } from "@/components/ui/button";
-import { Calendar, Trophy, ListChecks } from "lucide-react";
+import { Calendar, Trophy, ListChecks, Gavel } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "我的後台 | 聲擂" }, { name: "robots", content: "noindex" }] }),
