@@ -25,7 +25,9 @@ import { Route as AuthenticatedHostRouteImport } from './routes/_authenticated.h
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedHostEventsNewRouteImport } from './routes/_authenticated.host.events.new'
 import { Route as AuthenticatedHostCompetitionsNewRouteImport } from './routes/_authenticated.host.competitions.new'
+import { Route as AuthenticatedHostEventsSlugSubmissionsRouteImport } from './routes/_authenticated.host.events.$slug.submissions'
 import { Route as AuthenticatedHostCompetitionsSlugRoundsRouteImport } from './routes/_authenticated.host.competitions.$slug.rounds'
+import { Route as AuthenticatedHostCompetitionsSlugEntriesRouteImport } from './routes/_authenticated.host.competitions.$slug.entries'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -108,10 +110,22 @@ const AuthenticatedHostCompetitionsNewRoute =
     path: '/competitions/new',
     getParentRoute: () => AuthenticatedHostRoute,
   } as any)
+const AuthenticatedHostEventsSlugSubmissionsRoute =
+  AuthenticatedHostEventsSlugSubmissionsRouteImport.update({
+    id: '/events/$slug/submissions',
+    path: '/events/$slug/submissions',
+    getParentRoute: () => AuthenticatedHostRoute,
+  } as any)
 const AuthenticatedHostCompetitionsSlugRoundsRoute =
   AuthenticatedHostCompetitionsSlugRoundsRouteImport.update({
     id: '/competitions/$slug/rounds',
     path: '/competitions/$slug/rounds',
+    getParentRoute: () => AuthenticatedHostRoute,
+  } as any)
+const AuthenticatedHostCompetitionsSlugEntriesRoute =
+  AuthenticatedHostCompetitionsSlugEntriesRouteImport.update({
+    id: '/competitions/$slug/entries',
+    path: '/competitions/$slug/entries',
     getParentRoute: () => AuthenticatedHostRoute,
   } as any)
 
@@ -131,7 +145,9 @@ export interface FileRoutesByFullPath {
   '/u/$username': typeof UUsernameRoute
   '/host/competitions/new': typeof AuthenticatedHostCompetitionsNewRoute
   '/host/events/new': typeof AuthenticatedHostEventsNewRoute
+  '/host/competitions/$slug/entries': typeof AuthenticatedHostCompetitionsSlugEntriesRoute
   '/host/competitions/$slug/rounds': typeof AuthenticatedHostCompetitionsSlugRoundsRoute
+  '/host/events/$slug/submissions': typeof AuthenticatedHostEventsSlugSubmissionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -149,7 +165,9 @@ export interface FileRoutesByTo {
   '/u/$username': typeof UUsernameRoute
   '/host/competitions/new': typeof AuthenticatedHostCompetitionsNewRoute
   '/host/events/new': typeof AuthenticatedHostEventsNewRoute
+  '/host/competitions/$slug/entries': typeof AuthenticatedHostCompetitionsSlugEntriesRoute
   '/host/competitions/$slug/rounds': typeof AuthenticatedHostCompetitionsSlugRoundsRoute
+  '/host/events/$slug/submissions': typeof AuthenticatedHostEventsSlugSubmissionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -169,7 +187,9 @@ export interface FileRoutesById {
   '/u/$username': typeof UUsernameRoute
   '/_authenticated/host/competitions/new': typeof AuthenticatedHostCompetitionsNewRoute
   '/_authenticated/host/events/new': typeof AuthenticatedHostEventsNewRoute
+  '/_authenticated/host/competitions/$slug/entries': typeof AuthenticatedHostCompetitionsSlugEntriesRoute
   '/_authenticated/host/competitions/$slug/rounds': typeof AuthenticatedHostCompetitionsSlugRoundsRoute
+  '/_authenticated/host/events/$slug/submissions': typeof AuthenticatedHostEventsSlugSubmissionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -189,7 +209,9 @@ export interface FileRouteTypes {
     | '/u/$username'
     | '/host/competitions/new'
     | '/host/events/new'
+    | '/host/competitions/$slug/entries'
     | '/host/competitions/$slug/rounds'
+    | '/host/events/$slug/submissions'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -207,7 +229,9 @@ export interface FileRouteTypes {
     | '/u/$username'
     | '/host/competitions/new'
     | '/host/events/new'
+    | '/host/competitions/$slug/entries'
     | '/host/competitions/$slug/rounds'
+    | '/host/events/$slug/submissions'
   id:
     | '__root__'
     | '/'
@@ -226,7 +250,9 @@ export interface FileRouteTypes {
     | '/u/$username'
     | '/_authenticated/host/competitions/new'
     | '/_authenticated/host/events/new'
+    | '/_authenticated/host/competitions/$slug/entries'
     | '/_authenticated/host/competitions/$slug/rounds'
+    | '/_authenticated/host/events/$slug/submissions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -356,11 +382,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHostCompetitionsNewRouteImport
       parentRoute: typeof AuthenticatedHostRoute
     }
+    '/_authenticated/host/events/$slug/submissions': {
+      id: '/_authenticated/host/events/$slug/submissions'
+      path: '/events/$slug/submissions'
+      fullPath: '/host/events/$slug/submissions'
+      preLoaderRoute: typeof AuthenticatedHostEventsSlugSubmissionsRouteImport
+      parentRoute: typeof AuthenticatedHostRoute
+    }
     '/_authenticated/host/competitions/$slug/rounds': {
       id: '/_authenticated/host/competitions/$slug/rounds'
       path: '/competitions/$slug/rounds'
       fullPath: '/host/competitions/$slug/rounds'
       preLoaderRoute: typeof AuthenticatedHostCompetitionsSlugRoundsRouteImport
+      parentRoute: typeof AuthenticatedHostRoute
+    }
+    '/_authenticated/host/competitions/$slug/entries': {
+      id: '/_authenticated/host/competitions/$slug/entries'
+      path: '/competitions/$slug/entries'
+      fullPath: '/host/competitions/$slug/entries'
+      preLoaderRoute: typeof AuthenticatedHostCompetitionsSlugEntriesRouteImport
       parentRoute: typeof AuthenticatedHostRoute
     }
   }
@@ -369,14 +409,20 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedHostRouteChildren {
   AuthenticatedHostCompetitionsNewRoute: typeof AuthenticatedHostCompetitionsNewRoute
   AuthenticatedHostEventsNewRoute: typeof AuthenticatedHostEventsNewRoute
+  AuthenticatedHostCompetitionsSlugEntriesRoute: typeof AuthenticatedHostCompetitionsSlugEntriesRoute
   AuthenticatedHostCompetitionsSlugRoundsRoute: typeof AuthenticatedHostCompetitionsSlugRoundsRoute
+  AuthenticatedHostEventsSlugSubmissionsRoute: typeof AuthenticatedHostEventsSlugSubmissionsRoute
 }
 
 const AuthenticatedHostRouteChildren: AuthenticatedHostRouteChildren = {
   AuthenticatedHostCompetitionsNewRoute: AuthenticatedHostCompetitionsNewRoute,
   AuthenticatedHostEventsNewRoute: AuthenticatedHostEventsNewRoute,
+  AuthenticatedHostCompetitionsSlugEntriesRoute:
+    AuthenticatedHostCompetitionsSlugEntriesRoute,
   AuthenticatedHostCompetitionsSlugRoundsRoute:
     AuthenticatedHostCompetitionsSlugRoundsRoute,
+  AuthenticatedHostEventsSlugSubmissionsRoute:
+    AuthenticatedHostEventsSlugSubmissionsRoute,
 }
 
 const AuthenticatedHostRouteWithChildren =
