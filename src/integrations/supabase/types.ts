@@ -792,6 +792,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      settle_round: { Args: { _round_id: string }; Returns: undefined }
     }
     Enums: {
       advancement_rule:
