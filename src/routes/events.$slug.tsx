@@ -8,6 +8,17 @@ import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { Button } from "@/components/ui/button";
 import { eventTypeMeta } from "@/components/EventCard";
 import { EventSubmitButton } from "@/components/EventSubmitButton";
+import { useAuth } from "@/lib/auth-context";
+
+function HostShortcut({ eventSlug, hostId }: { eventSlug: string; hostId: string }) {
+  const { user } = useAuth();
+  if (!user || user.id !== hostId) return null;
+  return (
+    <Button asChild variant="outline" className="w-full border-ember/40 text-ember">
+      <Link to="/host/events/$slug/submissions" params={{ slug: eventSlug }}>審核投稿</Link>
+    </Button>
+  );
+}
 
 export const Route = createFileRoute("/events/$slug")({
   component: EventDetail,
