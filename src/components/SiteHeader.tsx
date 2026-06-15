@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export function SiteHeader() {
   const { user, signOut } = useAuth();
@@ -32,6 +33,8 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           {user ? (
+            <>
+              <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2">
