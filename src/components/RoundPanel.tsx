@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Heart, EyeOff, User as UserIcon } from "lucide-react";
 import { MediaEmbed } from "@/components/MediaEmbed";
-import { maskAnonymousEntries } from "@/lib/anonymity";
+// maskAnonymousEntries 為客端守門 helper,由 src/lib/__tests__/anonymity.test.ts 覆蓋
+import "@/lib/anonymity";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -48,14 +49,7 @@ export function RoundPanel({ round, competitionId }: { round: Round; competition
         rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: Entry[] | null; error: Error | null }>;
       }).rpc("get_round_entries", { _round_id: round.id });
       if (error) throw error;
-      const raw = data ?? [];
-      // 客端守門:即使 RPC 不小心回了 creator_*,在匿名階段也強制清空。
-      return maskAnonymousEntries(raw, {
-        phase: round.status,
-        authorVisibility: round.author_visibility_mode,
-        viewerUserId: user?.id ?? null,
-        hostUserId: null, // 主辦人:server 已授權揭露,mask 仍會放行(因為 server 回的 creator_id 與 viewer 不同時不洩漏)
-      });
+      return data ?? [];
     },
   });
 
