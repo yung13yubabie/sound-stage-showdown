@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TrackCard } from "@/components/TrackCard";
+import { FollowButton } from "@/components/FollowButton";
 import { User } from "lucide-react";
 
 export const Route = createFileRoute("/u/$username")({
@@ -38,11 +39,12 @@ function ProfilePage() {
         <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-full bg-gradient-ember shadow-ember">
           {profile.avatar_url ? <img src={profile.avatar_url} alt={profile.display_name} className="h-full w-full object-cover" /> : <User className="h-8 w-8 text-primary-foreground" />}
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="font-display text-3xl text-cream">{profile.display_name}</h1>
           <p className="text-sm text-muted-foreground">@{profile.username}</p>
           {profile.bio && <p className="mt-2 max-w-xl text-sm text-cream/80">{profile.bio}</p>}
         </div>
+        <FollowButton targetType="profile" targetId={profile.user_id} />
       </header>
 
       <section className="mt-8">
