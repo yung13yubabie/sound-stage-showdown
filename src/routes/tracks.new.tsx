@@ -3,7 +3,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
-import { validateMusicUrl } from "@/lib/url-validator";
+import { validateMusicUrl, detectTrackSource } from "@/lib/url-validator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -114,8 +114,38 @@ function NewTrack() {
         </div>
         <div>
           <Label>來源 URL (https://)</Label>
-          <Input type="url" value={form.source_url} onChange={(e) => setForm({ ...form, source_url: e.target.value })} placeholder="https://www.youtube.com/watch?v=..." />
-          <p className="mt-1 text-xs text-muted-foreground">僅允許 https 與支援的音樂平台網域。</p>
+          <Input
+            type="url"
+            value={form.source_url}
+            onChange={(e) => {
+              const next = e.target.value;
+              const detected = detectTrackSource(next);
+              setForm((f) => ({
+                ...f,
+                source_url: next,
+                // 偵測到平台時自動帶入,並覆寫先前的選擇
+                source_type: detected ?? f.source_type,
+              }));
+            }}
+            onPaste={(e) => {
+              const pasted = e.clipboardData.getData("text").trim();
+              const detected = detectTrackSource(pasted);
+              if (detected) {
+                e.preventDefault();
+                setForm((f) => ({
+                  ...f,
+                  source_url: pasted,
+                  source_type: detected,
+                  title: f.title || guessTitleFromUrl(pasted),
+                }));
+                toast.success(`已偵測到 ${labelFor(detected)} 連結`);
+              }
+            }}
+            placeholder="https://www.youtube.com/watch?v=... / https://suno.com/song/... / https://www.udio.com/songs/..."
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            支援 YouTube / Suno / Udio / SoundCloud,貼上連結會自動帶入來源類型。
+          </p>
         </div>
         <div>
           <Label>曲風</Label>
