@@ -53,7 +53,8 @@ export function SiteHeader() {
                   <LogOut className="mr-2 h-4 w-4" />登出
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+              </DropdownMenu>
+            </>
           ) : (
             <Button asChild size="sm" className="bg-gradient-ember text-primary-foreground hover:opacity-90">
               <Link to="/auth"><LogIn className="mr-1.5 h-4 w-4" />登入</Link>
