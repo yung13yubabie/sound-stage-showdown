@@ -7,7 +7,8 @@ import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Heart, EyeOff, User as UserIcon } from "lucide-react";
-import { YouTubeEmbed } from "@/components/YouTubeEmbed";
+import { MediaEmbed } from "@/components/MediaEmbed";
+import { maskAnonymousEntries } from "@/lib/anonymity";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { Database } from "@/integrations/supabase/types";
 
