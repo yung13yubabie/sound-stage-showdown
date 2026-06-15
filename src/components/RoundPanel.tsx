@@ -48,7 +48,14 @@ export function RoundPanel({ round, competitionId }: { round: Round; competition
         rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: Entry[] | null; error: Error | null }>;
       }).rpc("get_round_entries", { _round_id: round.id });
       if (error) throw error;
-      return data ?? [];
+      const raw = data ?? [];
+      // 客端守門:即使 RPC 不小心回了 creator_*,在匿名階段也強制清空。
+      return maskAnonymousEntries(raw, {
+        phase: round.status,
+        authorVisibility: round.author_visibility_mode,
+        viewerUserId: user?.id ?? null,
+        hostUserId: null, // 主辦人:server 已授權揭露,mask 仍會放行(因為 server 回的 creator_id 與 viewer 不同時不洩漏)
+      });
     },
   });
 
