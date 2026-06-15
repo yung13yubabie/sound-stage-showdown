@@ -22,10 +22,15 @@ function ProfilePage() {
   });
 
   const { data: tracks } = useQuery({
-    queryKey: ["profile-tracks", profile?.user_id],
-    enabled: !!profile?.user_id,
+    queryKey: ["profile-tracks", username],
+    enabled: !!profile,
     queryFn: async () => {
-      const { data, error } = await supabase.from("tracks").select("*").eq("creator_id", profile!.user_id).eq("status", "published").limit(20);
+      const { data, error } = await supabase
+        .from("tracks")
+        .select("*, profiles!inner(username)")
+        .eq("profiles.username", username)
+        .eq("status", "published")
+        .limit(20);
       if (error) throw error;
       return data;
     },
