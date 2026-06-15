@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Heart, EyeOff, User as UserIcon } from "lucide-react";
-import { YouTubeEmbed } from "@/components/YouTubeEmbed";
+import { MediaEmbed } from "@/components/MediaEmbed";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -161,7 +161,7 @@ function EntryCard({ entry, index, anonymous, voted, canVote, showCount, onVote,
         {entry.rank && <span className="rounded-full bg-ember/10 px-2 py-0.5 text-xs text-ember">#{entry.rank}</span>}
       </div>
 
-      {entry.track_embed_url && <div className="mt-3"><YouTubeEmbed url={entry.track_embed_url} title={entry.track_title} /></div>}
+      {entry.track_embed_url && <div className="mt-3"><MediaEmbed url={entry.track_embed_url} title={entry.track_title} /></div>}
 
       <div className="mt-3 flex items-center justify-between">
         <Button size="sm" variant={voted ? "default" : "outline"} disabled={!canVote || pending} onClick={onVote} className={voted ? "bg-gradient-ember text-primary-foreground" : ""}>
