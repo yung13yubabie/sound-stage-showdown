@@ -143,6 +143,19 @@
     animation: shimmer 4s linear infinite;
   }
 
+  /* 揭榜:匿名碼淡出 + 真名滑入 + 微光 */
+  @keyframes reveal-in {
+    0% { opacity: 0; transform: translateY(6px); filter: blur(6px); }
+    60% { filter: blur(0); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  @keyframes reveal-glow {
+    0% { box-shadow: 0 0 0 0 oklch(0.7 0.18 45 / 0.5); }
+    100% { box-shadow: 0 0 0 14px oklch(0.7 0.18 45 / 0); }
+  }
+  .reveal-in { animation: reveal-in 700ms cubic-bezier(.2,.7,.2,1) both; }
+  .reveal-glow { animation: reveal-glow 1.2s ease-out 1; }
+
   /* 卡片懸停 */
   .hover-rise {
     transition: transform 300ms var(--transition-smooth), box-shadow 300ms var(--transition-smooth), border-color 300ms var(--transition-smooth);
