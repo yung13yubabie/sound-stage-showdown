@@ -139,21 +139,20 @@ export function RoundPanel({ round, competitionId }: { round: Round; competition
 function EntryCard({ entry, index, anonymous, voted, canVote, showCount, onVote, pending }: {
   entry: Entry; index: number; anonymous: boolean; voted: boolean; canVote: boolean; showCount: boolean; onVote: () => void; pending: boolean;
 }) {
-  const displayName = anonymous && !entry.creator_username
+  const isAnon = anonymous && !entry.creator_username;
+  const displayName = isAnon
     ? entry.anonymous_code ?? `匿名 #${String(index + 1).padStart(2, "0")}`
     : entry.creator_display_name ?? entry.creator_username ?? "未知創作者";
 
   return (
-    <li className="rounded-xl border border-border bg-stage p-3">
+    <li className={`rounded-xl border border-border bg-stage p-3 ${!isAnon && entry.creator_username ? "reveal-glow" : ""}`}>
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
           <div className="truncate font-medium text-cream">{entry.track_title}</div>
-          <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-            {anonymous && !entry.creator_username ? <EyeOff className="h-3 w-3" /> : <UserIcon className="h-3 w-3" />}
-            {anonymous && entry.creator_username ? (
-              <Link to="/u/$username" params={{ username: entry.creator_username }} className="hover:text-ember">{displayName}</Link>
-            ) : entry.creator_username ? (
-              <Link to="/u/$username" params={{ username: entry.creator_username }} className="hover:text-ember">{displayName}</Link>
+          <div key={isAnon ? "anon" : "real"} className={`mt-0.5 flex items-center gap-1 text-xs ${isAnon ? "text-muted-foreground" : "text-ember reveal-in"}`}>
+            {isAnon ? <EyeOff className="h-3 w-3" /> : <UserIcon className="h-3 w-3" />}
+            {entry.creator_username ? (
+              <Link to="/u/$username" params={{ username: entry.creator_username }} className="hover:underline">{displayName}</Link>
             ) : (
               <span>{displayName}</span>
             )}

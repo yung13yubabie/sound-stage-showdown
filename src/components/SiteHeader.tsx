@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export function SiteHeader() {
   const { user, signOut } = useAuth();
@@ -32,6 +33,8 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           {user ? (
+            <>
+              <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2">
@@ -50,7 +53,8 @@ export function SiteHeader() {
                   <LogOut className="mr-2 h-4 w-4" />登出
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+              </DropdownMenu>
+            </>
           ) : (
             <Button asChild size="sm" className="bg-gradient-ember text-primary-foreground hover:opacity-90">
               <Link to="/auth"><LogIn className="mr-1.5 h-4 w-4" />登入</Link>

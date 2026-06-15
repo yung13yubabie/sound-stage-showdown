@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Countdown } from "@/components/Countdown";
 import { StatusBadge } from "@/components/StatusBadge";
 import { RoundPanel } from "@/components/RoundPanel";
+import { FollowButton } from "@/components/FollowButton";
+import { ReminderButton } from "@/components/ReminderButton";
 
 export const Route = createFileRoute("/competitions/$slug")({
   component: CompetitionDetail,
@@ -52,6 +54,10 @@ function CompetitionDetail() {
             <Trophy className="h-6 w-6 text-primary-foreground" />
           </div>
           <StatusBadge variant={variant} />
+          <div className="ml-auto flex items-center gap-2">
+            <FollowButton targetType="competition" targetId={competition.id} />
+            <ReminderButton targetType="competition" targetId={competition.id} remindAt={competition.warmup_countdown_at ?? null} />
+          </div>
         </div>
         <h1 className="mt-4 font-display text-4xl text-cream md:text-5xl">{competition.title}</h1>
         {competition.theme && <p className="mt-2 text-ember">主題:{competition.theme}</p>}
