@@ -8,8 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Heart, EyeOff, User as UserIcon } from "lucide-react";
 import { MediaEmbed } from "@/components/MediaEmbed";
-// maskAnonymousEntries 為客端守門 helper,由 src/lib/__tests__/anonymity.test.ts 覆蓋
-import "@/lib/anonymity";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { Database } from "@/integrations/supabase/types";
 
