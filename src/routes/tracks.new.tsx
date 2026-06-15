@@ -14,6 +14,24 @@ import type { Database } from "@/integrations/supabase/types";
 
 type TrackSource = Database["public"]["Enums"]["track_source"];
 
+const SOURCE_LABEL: Record<string, string> = {
+  youtube: "YouTube",
+  youtube_live: "YouTube Live",
+  suno: "Suno",
+  udio: "Udio",
+  soundcloud: "SoundCloud",
+};
+const labelFor = (s: string) => SOURCE_LABEL[s] ?? s;
+function guessTitleFromUrl(u: string): string {
+  try {
+    const url = new URL(u);
+    const last = url.pathname.split("/").filter(Boolean).pop() ?? "";
+    return decodeURIComponent(last).replace(/[-_]+/g, " ").slice(0, 80);
+  } catch {
+    return "";
+  }
+}
+
 const schema = z.object({
   title: z.string().trim().min(1, "標題不可為空").max(120),
   source_type: z.enum(["youtube", "youtube_live", "suno", "udio", "soundcloud", "upload", "external"]),
