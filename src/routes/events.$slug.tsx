@@ -8,6 +8,8 @@ import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { Button } from "@/components/ui/button";
 import { eventTypeMeta } from "@/components/EventCard";
 import { EventSubmitButton } from "@/components/EventSubmitButton";
+import { FollowButton } from "@/components/FollowButton";
+import { ReminderButton } from "@/components/ReminderButton";
 import { useAuth } from "@/lib/auth-context";
 
 function HostShortcut({ eventSlug, hostId }: { eventSlug: string; hostId: string }) {
@@ -102,8 +104,8 @@ function EventDetail() {
               <Link to="/competitions"><Trophy className="mr-2 h-4 w-4" />查看相關比賽</Link>
             </Button>
           )}
-          <Button variant="outline" className="w-full">追蹤活動</Button>
-          <Button variant="outline" className="w-full">提醒我</Button>
+          <FollowButton targetType="event" targetId={event.id} />
+          <ReminderButton targetType="event" targetId={event.id} remindAt={event.starts_at} />
         </aside>
       </section>
     </article>
