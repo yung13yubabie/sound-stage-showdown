@@ -69,23 +69,16 @@ export function RoundPanel({ round, competitionId }: { round: Round; competition
   const vote = useMutation({
     mutationFn: async (entry: Entry) => {
       if (!user) throw new Error("請先登入");
-      if (myVotes && myVotes.size >= round.max_votes_per_user && !myVotes.has(entry.id)) {
-        throw new Error(`已達投票上限 (${round.max_votes_per_user})`);
-      }
-      if (myVotes?.has(entry.id)) {
-        const { error } = await supabase.from("votes").delete().eq("round_id", round.id).eq("voter_id", user.id).eq("round_entry_id", entry.id);
-        if (error) throw error;
-        return "removed";
-      }
-      const { error } = await supabase.from("votes").insert({
-        round_id: round.id,
-        round_entry_id: entry.id,
-        competition_id: competitionId,
-        voter_id: user.id,
-        visibility_mode: round.voter_visibility_mode,
-      });
+      // 所有規則 (投票階段、上限、不能投自己、票權重)
+      // 都由 DB 端 cast_vote RPC 校驗 — 客端只負責呼叫。
+      const { data, error } = await (supabase as unknown as {
+        rpc: (fn: string, args: Record<string, unknown>) => Promise<{
+          data: Array<{ action: "added" | "removed"; vote_id: string }> | null;
+          error: Error | null;
+        }>;
+      }).rpc("cast_vote", { _entry_id: entry.id });
       if (error) throw error;
-      return "added";
+      return data?.[0]?.action ?? "added";
     },
     onSuccess: (mode) => {
       toast.success(mode === "added" ? "投票完成" : "已取消投票");
