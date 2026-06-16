@@ -760,6 +760,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cast_vote: {
+        Args: { _entry_id: string }
+        Returns: {
+          action: string
+          vote_id: string
+        }[]
+      }
       get_round_entries: {
         Args: { _round_id: string }
         Returns: {
