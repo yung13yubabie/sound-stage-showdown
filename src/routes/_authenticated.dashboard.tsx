@@ -19,6 +19,15 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const { user } = useAuth();
+  const qc = useQueryClient();
+
+  async function deleteTrack(id: string, title: string) {
+    const { error } = await supabase.from("tracks").delete().eq("id", id);
+    if (error) { toast.error(`刪除失敗:${error.message}`); return; }
+    toast.success(`已刪除「${title}」`);
+    qc.invalidateQueries({ queryKey: ["my-tracks"] });
+  }
+
 
   const { data: tracks } = useQuery({
     queryKey: ["my-tracks", user?.id],
