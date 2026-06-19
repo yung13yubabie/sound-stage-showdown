@@ -25,7 +25,7 @@ const schema = z.object({
   ai_disclosure: z.string().trim().max(200).optional(),
   cover_url: z.string().trim().max(500).optional(),
   lyrics: z.string().trim().max(10000).optional(),
-  status: z.enum(["draft", "published", "archived"]),
+  status: z.enum(["draft", "published", "removed"]),
 });
 
 export const Route = createFileRoute("/_authenticated/tracks/$slug/edit")({
@@ -117,7 +117,7 @@ function EditTrack() {
             <SelectContent>
               <SelectItem value="draft">草稿</SelectItem>
               <SelectItem value="published">公開</SelectItem>
-              <SelectItem value="archived">封存</SelectItem>
+              <SelectItem value="removed">下架</SelectItem>
             </SelectContent>
           </Select>
         </div>
