@@ -130,7 +130,39 @@ function Dashboard() {
 
         <TabsContent value="tracks" className="mt-6">
           {tracks && tracks.length > 0 ? (
-            <div className="grid gap-3 sm:grid-cols-2">{tracks.map((t) => <TrackCard key={t.id} track={t} />)}</div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {tracks.map((t) => (
+                <div key={t.id} className="relative group">
+                  <TrackCard track={t} />
+                  <div className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                    <Button asChild size="icon" variant="secondary" className="h-7 w-7">
+                      <Link to="/tracks/$slug/edit" params={{ slug: t.slug }} aria-label="編輯">
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="icon" variant="destructive" className="h-7 w-7" aria-label="刪除">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>確定刪除「{t.title}」?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            這個動作無法復原。若作品已參加比賽或活動,相關紀錄會一起被移除。
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>取消</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => deleteTrack(t.id, t.title)}>刪除</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : <Empty>還沒有作品。<Link to="/tracks/new" className="ml-1 text-ember hover:underline">建立第一首</Link></Empty>}
         </TabsContent>
 
