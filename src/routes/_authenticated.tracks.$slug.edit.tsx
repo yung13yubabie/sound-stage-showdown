@@ -20,6 +20,7 @@ const schema = z.object({
   title: z.string().trim().min(1).max(120),
   source_type: z.enum(["youtube", "youtube_live", "suno", "udio", "soundcloud", "upload", "external"]),
   source_url: z.string().trim().max(500).optional(),
+  embed_url: z.string().trim().max(500).optional(),
   description: z.string().trim().max(2000).optional(),
   genre: z.string().trim().max(40).optional(),
   ai_disclosure: z.string().trim().max(200).optional(),
@@ -27,6 +28,7 @@ const schema = z.object({
   lyrics: z.string().trim().max(10000).optional(),
   status: z.enum(["draft", "published", "removed"]),
 });
+
 
 export const Route = createFileRoute("/_authenticated/tracks/$slug/edit")({
   head: () => ({ meta: [{ title: "編輯作品 | 聲擂" }, { name: "robots", content: "noindex" }] }),
@@ -55,6 +57,7 @@ function EditTrack() {
         title: track.title,
         source_type: track.source_type,
         source_url: track.source_url ?? "",
+        embed_url: track.embed_url ?? "",
         description: track.description ?? "",
         genre: track.genre ?? "",
         ai_disclosure: track.ai_disclosure ?? "",
@@ -64,6 +67,7 @@ function EditTrack() {
       });
     }
   }, [track]);
+
 
   if (isLoading || !form) return <div className="p-10 text-center text-muted-foreground">載入中...</div>;
   if (!track) return <div className="p-10 text-center text-muted-foreground">找不到作品</div>;
@@ -81,6 +85,7 @@ function EditTrack() {
         title: parsed.data.title,
         source_type: parsed.data.source_type,
         source_url: parsed.data.source_url || null,
+        embed_url: parsed.data.embed_url || null,
         description: parsed.data.description || null,
         genre: parsed.data.genre || null,
         ai_disclosure: parsed.data.ai_disclosure || null,
@@ -88,6 +93,7 @@ function EditTrack() {
         lyrics: parsed.data.lyrics || null,
         status: parsed.data.status,
       }).eq("id", track.id);
+
       if (error) throw error;
       toast.success("已儲存");
       navigate({ to: "/dashboard" });
@@ -139,6 +145,12 @@ function EditTrack() {
           <Label>來源 URL</Label>
           <Input type="url" value={form.source_url} onChange={(e) => setForm({ ...form, source_url: e.target.value })} />
         </div>
+        <div>
+          <Label>站內播放音檔 URL (mp3 / m4a)</Label>
+          <Input type="url" placeholder="https://..." value={form.embed_url} onChange={(e) => setForm({ ...form, embed_url: e.target.value })} />
+          <p className="mt-1 text-xs text-muted-foreground">Suno/Udio 禁止 iframe,需直接音檔 URL 才能站內播放。新建作品時系統會從 og:audio 自動抓取。</p>
+        </div>
+
         <div>
           <Label>封面 URL</Label>
           <Input type="url" value={form.cover_url} onChange={(e) => setForm({ ...form, cover_url: e.target.value })} />
