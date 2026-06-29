@@ -64,9 +64,11 @@ function NewTrack() {
     genre: "",
     ai_disclosure: "",
     cover_url: "",
+    embed_url: "",
   });
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+
 
   if (authLoading) return <div className="p-10 text-center">載入中...</div>;
   if (!user) {
@@ -89,12 +91,15 @@ function NewTrack() {
         title: f.title || meta.title || guessTitleFromUrl(rawUrl),
         description: f.description || meta.description || "",
         cover_url: f.cover_url || meta.cover_url || "",
+        embed_url: f.embed_url || meta.audio_url || "",
       }));
-      if (meta.ok && (meta.title || meta.cover_url)) {
-        toast.success(`已從 ${labelFor(detected)} 帶入${meta.title ? "標題" : ""}${meta.cover_url ? "與封面" : ""}`);
+      const parts = [meta.title && "標題", meta.cover_url && "封面", meta.audio_url && "可內嵌音檔"].filter(Boolean).join("、");
+      if (meta.ok && parts) {
+        toast.success(`已從 ${labelFor(detected)} 帶入${parts}`);
       } else {
         toast.success(`已偵測到 ${labelFor(detected)} 連結`);
       }
+
     } catch {
       // 失敗就退回只填 URL
       setForm((f) => ({
@@ -128,12 +133,14 @@ function NewTrack() {
         slug,
         source_type: parsed.data.source_type,
         source_url: parsed.data.source_url || null,
+        embed_url: form.embed_url || null,
         description: parsed.data.description || null,
         genre: parsed.data.genre || null,
         ai_disclosure: parsed.data.ai_disclosure || null,
         cover_url: parsed.data.cover_url || null,
         status: "published",
       });
+
       if (error) throw error;
       toast.success("作品已建立");
       navigate({ to: "/dashboard" });
