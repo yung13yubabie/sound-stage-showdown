@@ -3,12 +3,56 @@ import { Play, ExternalLink } from "lucide-react";
 import { toMediaEmbed } from "@/lib/url-validator";
 
 /**
- * 安全的音樂平台 embed —  YouTube / Suno / Udio / SoundCloud。
- * lazy:點擊後才掛 iframe,避免列表卡死、記憶體洩漏。
+ * 站內音樂播放。
+ * - YouTube / SoundCloud:用官方 iframe 內嵌播放
+ * - Suno / Udio:平台禁止 iframe (X-Frame-Options),所以改用直接 <audio>
+ *   播放從 og:audio 抓到的 mp3 URL (audioUrl)。沒有 audioUrl 才回退外連。
  */
-export function MediaEmbed({ url, title = "音樂作品" }: { url: string; title?: string }) {
+export function MediaEmbed({
+  url,
+  audioUrl,
+  coverUrl,
+  title = "音樂作品",
+}: {
+  url: string;
+  audioUrl?: string | null;
+  coverUrl?: string | null;
+  title?: string;
+}) {
   const [active, setActive] = useState(false);
   const embed = toMediaEmbed(url);
+
+  // Suno / Udio:優先 inline audio
+  const inlineAudio =
+    audioUrl && /^https:\/\//.test(audioUrl) && (embed?.kind === "suno" || embed?.kind === "udio")
+      ? audioUrl
+      : null;
+
+  if (inlineAudio) {
+    return (
+      <div className="rounded-lg border border-border bg-stage p-4">
+        {coverUrl && (
+          <img
+            src={coverUrl}
+            alt={title}
+            loading="lazy"
+            className="mb-3 h-32 w-32 rounded object-cover ring-1 ring-border"
+          />
+        )}
+        <audio src={inlineAudio} controls preload="none" className="w-full">
+          您的瀏覽器不支援音訊播放。
+        </audio>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-flex items-center gap-1 text-[11px] uppercase tracking-widest text-muted-foreground hover:text-ember"
+        >
+          <ExternalLink className="h-3 w-3" /> 原始平台頁面
+        </a>
+      </div>
+    );
+  }
 
   if (!embed) {
     return (
@@ -18,16 +62,25 @@ export function MediaEmbed({ url, title = "音樂作品" }: { url: string; title
     );
   }
 
-  if (embed.kind === "link") {
+  if (embed.kind === "link" || embed.kind === "suno" || embed.kind === "udio") {
+    // Suno/Udio 沒有可用 embed 且沒有 inline audio → 提供外連 + 提示
     return (
-      <a
-        href={embed.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 rounded-lg border border-border bg-stage px-3 py-2 text-sm text-cream hover:border-ember"
-      >
-        <ExternalLink className="h-4 w-4" /> 開啟原連結
-      </a>
+      <div className="flex flex-col gap-2 rounded-lg border border-dashed border-border bg-stage p-4 text-sm">
+        <span className="text-xs uppercase tracking-widest text-ember">
+          {embed.kind === "link" ? "外部連結" : `${embed.kind} 平台`}
+        </span>
+        <p className="text-muted-foreground">
+          這首作品目前無法在站內播放(來源平台未提供可內嵌音檔)。重新貼一次連結讓系統再抓一次,或直接到原始頁面收聽。
+        </p>
+        <a
+          href={embed.kind === "link" ? embed.href : url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex w-fit items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-cream hover:border-ember"
+        >
+          <ExternalLink className="h-4 w-4" /> 開啟原連結
+        </a>
+      </div>
     );
   }
 

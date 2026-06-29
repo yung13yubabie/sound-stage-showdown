@@ -34,9 +34,11 @@ export type TrackMetadata = {
   title?: string;
   description?: string;
   cover_url?: string;
+  audio_url?: string;
   genre?: string;
   source?: "suno" | "udio" | "soundcloud" | "youtube";
 };
+
 
 function metaFromHtml(html: string, prop: string): string | undefined {
   // og:xxx / twitter:xxx / name=description
@@ -122,6 +124,11 @@ export const fetchTrackMetadata = createServerFn({ method: "POST" })
       metaFromHtml(html, "twitter:description") ??
       metaFromHtml(html, "description") ??
       undefined;
+    const audio =
+      metaFromHtml(html, "og:audio:secure_url") ??
+      metaFromHtml(html, "og:audio") ??
+      metaFromHtml(html, "twitter:player:stream") ??
+      undefined;
 
     // 去掉平台尾巴 (例如 "Song Title | Suno")
     let title = rawTitle?.trim();
@@ -136,5 +143,7 @@ export const fetchTrackMetadata = createServerFn({ method: "POST" })
       title,
       cover_url: cover && /^https:\/\//.test(cover) ? cover : undefined,
       description: desc?.slice(0, 1000),
+      audio_url: audio && /^https:\/\//.test(audio) ? audio : undefined,
     };
   });
+

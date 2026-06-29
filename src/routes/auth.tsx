@@ -51,9 +51,19 @@ function AuthPage() {
   };
 
   const signInGoogle = async () => {
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (r.error) toast.error("Google 登入失敗");
+    try {
+      const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth` });
+      if (r.error) {
+        const msg = r.error.message || JSON.stringify(r.error);
+        console.error("[google oauth]", r.error);
+        toast.error(`Google 登入失敗: ${msg}`);
+      }
+    } catch (err) {
+      console.error("[google oauth] exception", err);
+      toast.error(err instanceof Error ? `Google 登入失敗: ${err.message}` : "Google 登入失敗");
+    }
   };
+
 
   return (
     <div className="grid min-h-[80vh] place-items-center px-4 py-10">
