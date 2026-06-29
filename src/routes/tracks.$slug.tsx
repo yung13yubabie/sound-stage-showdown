@@ -46,9 +46,10 @@ function TrackDetail() {
 
       {track.source_url && (
         <div className="mt-6">
-          <MediaEmbed url={track.source_url} title={track.title} />
+          <MediaEmbed url={track.source_url} audioUrl={track.embed_url} coverUrl={track.cover_url} title={track.title} />
         </div>
       )}
+
 
       {track.description && <p className="mt-6 whitespace-pre-wrap text-muted-foreground">{track.description}</p>}
 
