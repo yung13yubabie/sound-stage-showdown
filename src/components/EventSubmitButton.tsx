@@ -12,6 +12,7 @@ export function EventSubmitButton({ eventId }: { eventId: string }) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
+  const [agreed, setAgreed] = useState(false);
 
   const { data: tracks } = useQuery({
     queryKey: ["my-tracks-for-submit", user?.id],
@@ -27,6 +28,7 @@ export function EventSubmitButton({ eventId }: { eventId: string }) {
   const submit = useMutation({
     mutationFn: async () => {
       if (!user || !selected) throw new Error("請先選擇作品");
+      if (!agreed) throw new Error("請先勾選確認聲明");
       const { error } = await supabase.from("event_submissions").insert({
         event_id: eventId,
         creator_id: user.id,
@@ -81,7 +83,11 @@ export function EventSubmitButton({ eventId }: { eventId: string }) {
             </Button>
           </div>
         )}
-        <Button onClick={() => submit.mutate()} disabled={!selected || submit.isPending} className="w-full bg-gradient-ember text-primary-foreground">
+        <label className="flex items-start gap-2 rounded-lg border border-border bg-stage p-3 text-xs text-muted-foreground">
+          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5" />
+          <span>我確認此作品為本人創作或本人擁有投稿權,並符合本活動的公開狀態、創作時間與 AI 使用規則。</span>
+        </label>
+        <Button onClick={() => submit.mutate()} disabled={!selected || !agreed || submit.isPending} className="w-full bg-gradient-ember text-primary-foreground">
           {submit.isPending ? "送出中..." : "確認投稿"}
         </Button>
       </DialogContent>

@@ -74,7 +74,7 @@ export function MediaEmbed({
           這首作品目前無法在站內播放(來源平台未提供可內嵌音檔)。重新貼一次連結讓系統再抓一次,或直接到原始頁面收聽。
         </p>
         <a
-          href={embed.kind === "link" ? embed.href : url}
+          href={embed.kind === "link" ? embed.href : (url ?? "#")}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex w-fit items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-cream hover:border-ember"
