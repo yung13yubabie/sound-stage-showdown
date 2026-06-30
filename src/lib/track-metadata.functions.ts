@@ -36,8 +36,30 @@ export type TrackMetadata = {
   cover_url?: string;
   audio_url?: string;
   genre?: string;
+  lyrics?: string;
+  published_at?: string;
   source?: "suno" | "udio" | "soundcloud" | "youtube";
 };
+
+function extractJsonLd(html: string): Record<string, unknown>[] {
+  const out: Record<string, unknown>[] = [];
+  const re = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
+    try {
+      const j = JSON.parse(m[1].trim());
+      if (Array.isArray(j)) out.push(...j);
+      else if (j && typeof j === "object") out.push(j);
+    } catch { /* ignore */ }
+  }
+  return out;
+}
+
+function firstString(...vals: unknown[]): string | undefined {
+  for (const v of vals) if (typeof v === "string" && v.trim()) return v.trim();
+  return undefined;
+}
+
 
 
 function metaFromHtml(html: string, prop: string): string | undefined {
@@ -137,6 +159,31 @@ export const fetchTrackMetadata = createServerFn({ method: "POST" })
       title = title.slice(0, 120);
     }
 
+    // JSON-LD MusicRecording → 抓曲風 / 歌詞 / 發佈時間
+    const ldList = extractJsonLd(html);
+    let genre: string | undefined;
+    let lyrics: string | undefined;
+    let publishedAt: string | undefined;
+    for (const ld of ldList) {
+      const t = (ld as { "@type"?: string | string[] })["@type"];
+      const types = Array.isArray(t) ? t : t ? [t] : [];
+      if (types.some((x) => /MusicRecording|MusicComposition|VideoObject|AudioObject/i.test(x))) {
+        const g = (ld as Record<string, unknown>).genre;
+        genre ??= firstString(g, Array.isArray(g) ? g[0] : undefined);
+        const ly = (ld as Record<string, unknown>).lyrics;
+        if (ly && typeof ly === "object") {
+          lyrics ??= firstString((ly as Record<string, unknown>).text);
+        } else {
+          lyrics ??= firstString(ly);
+        }
+        publishedAt ??= firstString(
+          (ld as Record<string, unknown>).datePublished,
+          (ld as Record<string, unknown>).uploadDate,
+          (ld as Record<string, unknown>).dateCreated,
+        );
+      }
+    }
+
     return {
       ok: true,
       source,
@@ -144,6 +191,9 @@ export const fetchTrackMetadata = createServerFn({ method: "POST" })
       cover_url: cover && /^https:\/\//.test(cover) ? cover : undefined,
       description: desc?.slice(0, 1000),
       audio_url: audio && /^https:\/\//.test(audio) ? audio : undefined,
+      genre: genre?.slice(0, 60),
+      lyrics: lyrics?.slice(0, 8000),
+      published_at: publishedAt,
     };
   });
 
