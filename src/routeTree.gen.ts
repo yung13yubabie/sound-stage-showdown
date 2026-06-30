@@ -23,6 +23,7 @@ import { Route as EventsSlugRouteImport } from './routes/events.$slug'
 import { Route as CompetitionsSlugRouteImport } from './routes/competitions.$slug'
 import { Route as AuthenticatedHostRouteImport } from './routes/_authenticated.host'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedTracksSlugVerifyRouteImport } from './routes/_authenticated.tracks.$slug.verify'
 import { Route as AuthenticatedTracksSlugEditRouteImport } from './routes/_authenticated.tracks.$slug.edit'
 import { Route as AuthenticatedHostEventsNewRouteImport } from './routes/_authenticated.host.events.new'
 import { Route as AuthenticatedHostCompetitionsNewRouteImport } from './routes/_authenticated.host.competitions.new'
@@ -99,6 +100,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedTracksSlugVerifyRoute =
+  AuthenticatedTracksSlugVerifyRouteImport.update({
+    id: '/tracks/$slug/verify',
+    path: '/tracks/$slug/verify',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedTracksSlugEditRoute =
   AuthenticatedTracksSlugEditRouteImport.update({
     id: '/tracks/$slug/edit',
@@ -153,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/host/competitions/new': typeof AuthenticatedHostCompetitionsNewRoute
   '/host/events/new': typeof AuthenticatedHostEventsNewRoute
   '/tracks/$slug/edit': typeof AuthenticatedTracksSlugEditRoute
+  '/tracks/$slug/verify': typeof AuthenticatedTracksSlugVerifyRoute
   '/host/competitions/$slug/entries': typeof AuthenticatedHostCompetitionsSlugEntriesRoute
   '/host/competitions/$slug/rounds': typeof AuthenticatedHostCompetitionsSlugRoundsRoute
   '/host/events/$slug/submissions': typeof AuthenticatedHostEventsSlugSubmissionsRoute
@@ -174,6 +182,7 @@ export interface FileRoutesByTo {
   '/host/competitions/new': typeof AuthenticatedHostCompetitionsNewRoute
   '/host/events/new': typeof AuthenticatedHostEventsNewRoute
   '/tracks/$slug/edit': typeof AuthenticatedTracksSlugEditRoute
+  '/tracks/$slug/verify': typeof AuthenticatedTracksSlugVerifyRoute
   '/host/competitions/$slug/entries': typeof AuthenticatedHostCompetitionsSlugEntriesRoute
   '/host/competitions/$slug/rounds': typeof AuthenticatedHostCompetitionsSlugRoundsRoute
   '/host/events/$slug/submissions': typeof AuthenticatedHostEventsSlugSubmissionsRoute
@@ -197,6 +206,7 @@ export interface FileRoutesById {
   '/_authenticated/host/competitions/new': typeof AuthenticatedHostCompetitionsNewRoute
   '/_authenticated/host/events/new': typeof AuthenticatedHostEventsNewRoute
   '/_authenticated/tracks/$slug/edit': typeof AuthenticatedTracksSlugEditRoute
+  '/_authenticated/tracks/$slug/verify': typeof AuthenticatedTracksSlugVerifyRoute
   '/_authenticated/host/competitions/$slug/entries': typeof AuthenticatedHostCompetitionsSlugEntriesRoute
   '/_authenticated/host/competitions/$slug/rounds': typeof AuthenticatedHostCompetitionsSlugRoundsRoute
   '/_authenticated/host/events/$slug/submissions': typeof AuthenticatedHostEventsSlugSubmissionsRoute
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/host/competitions/new'
     | '/host/events/new'
     | '/tracks/$slug/edit'
+    | '/tracks/$slug/verify'
     | '/host/competitions/$slug/entries'
     | '/host/competitions/$slug/rounds'
     | '/host/events/$slug/submissions'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/host/competitions/new'
     | '/host/events/new'
     | '/tracks/$slug/edit'
+    | '/tracks/$slug/verify'
     | '/host/competitions/$slug/entries'
     | '/host/competitions/$slug/rounds'
     | '/host/events/$slug/submissions'
@@ -263,6 +275,7 @@ export interface FileRouteTypes {
     | '/_authenticated/host/competitions/new'
     | '/_authenticated/host/events/new'
     | '/_authenticated/tracks/$slug/edit'
+    | '/_authenticated/tracks/$slug/verify'
     | '/_authenticated/host/competitions/$slug/entries'
     | '/_authenticated/host/competitions/$slug/rounds'
     | '/_authenticated/host/events/$slug/submissions'
@@ -381,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/tracks/$slug/verify': {
+      id: '/_authenticated/tracks/$slug/verify'
+      path: '/tracks/$slug/verify'
+      fullPath: '/tracks/$slug/verify'
+      preLoaderRoute: typeof AuthenticatedTracksSlugVerifyRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/tracks/$slug/edit': {
       id: '/_authenticated/tracks/$slug/edit'
       path: '/tracks/$slug/edit'
@@ -452,12 +472,14 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedHostRoute: typeof AuthenticatedHostRouteWithChildren
   AuthenticatedTracksSlugEditRoute: typeof AuthenticatedTracksSlugEditRoute
+  AuthenticatedTracksSlugVerifyRoute: typeof AuthenticatedTracksSlugVerifyRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedHostRoute: AuthenticatedHostRouteWithChildren,
   AuthenticatedTracksSlugEditRoute: AuthenticatedTracksSlugEditRoute,
+  AuthenticatedTracksSlugVerifyRoute: AuthenticatedTracksSlugVerifyRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -502,13 +524,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -48,6 +48,7 @@ export type Database = {
         Row: {
           advancement_count: number | null
           advancement_rule: Database["public"]["Enums"]["advancement_rule"]
+          ai_policy_override: Database["public"]["Enums"]["ai_policy"] | null
           allow_self_vote: boolean
           author_visibility_mode: Database["public"]["Enums"]["author_visibility_mode"]
           competition_id: string
@@ -56,6 +57,9 @@ export type Database = {
           id: string
           judge_score_weight: number
           max_votes_per_user: number
+          ownership_verification_override:
+            | Database["public"]["Enums"]["ownership_verification_requirement"]
+            | null
           public_vote_weight: number
           reset_votes_from_previous_round: boolean
           results_publish_at: string | null
@@ -75,6 +79,7 @@ export type Database = {
         Insert: {
           advancement_count?: number | null
           advancement_rule?: Database["public"]["Enums"]["advancement_rule"]
+          ai_policy_override?: Database["public"]["Enums"]["ai_policy"] | null
           allow_self_vote?: boolean
           author_visibility_mode?: Database["public"]["Enums"]["author_visibility_mode"]
           competition_id: string
@@ -83,6 +88,9 @@ export type Database = {
           id?: string
           judge_score_weight?: number
           max_votes_per_user?: number
+          ownership_verification_override?:
+            | Database["public"]["Enums"]["ownership_verification_requirement"]
+            | null
           public_vote_weight?: number
           reset_votes_from_previous_round?: boolean
           results_publish_at?: string | null
@@ -102,6 +110,7 @@ export type Database = {
         Update: {
           advancement_count?: number | null
           advancement_rule?: Database["public"]["Enums"]["advancement_rule"]
+          ai_policy_override?: Database["public"]["Enums"]["ai_policy"] | null
           allow_self_vote?: boolean
           author_visibility_mode?: Database["public"]["Enums"]["author_visibility_mode"]
           competition_id?: string
@@ -110,6 +119,9 @@ export type Database = {
           id?: string
           judge_score_weight?: number
           max_votes_per_user?: number
+          ownership_verification_override?:
+            | Database["public"]["Enums"]["ownership_verification_requirement"]
+            | null
           public_vote_weight?: number
           reset_votes_from_previous_round?: boolean
           results_publish_at?: string | null
@@ -138,14 +150,17 @@ export type Database = {
       }
       competitions: {
         Row: {
+          ai_policy: Database["public"]["Enums"]["ai_policy"]
           allow_early_submission: boolean
           cover_url: string | null
           created_at: string
+          creation_time_requirement: Database["public"]["Enums"]["creation_time_requirement"]
           description: string | null
           enable_warmup: boolean
           event_id: string | null
           host_id: string
           id: string
+          ownership_verification_requirement: Database["public"]["Enums"]["ownership_verification_requirement"]
           rules: string | null
           show_warmup_countdown: boolean
           slug: string
@@ -156,16 +171,20 @@ export type Database = {
           warmup_countdown_at: string | null
           warmup_description: string | null
           warmup_label: string | null
+          work_visibility_requirement: Database["public"]["Enums"]["work_visibility_requirement"]
         }
         Insert: {
+          ai_policy?: Database["public"]["Enums"]["ai_policy"]
           allow_early_submission?: boolean
           cover_url?: string | null
           created_at?: string
+          creation_time_requirement?: Database["public"]["Enums"]["creation_time_requirement"]
           description?: string | null
           enable_warmup?: boolean
           event_id?: string | null
           host_id: string
           id?: string
+          ownership_verification_requirement?: Database["public"]["Enums"]["ownership_verification_requirement"]
           rules?: string | null
           show_warmup_countdown?: boolean
           slug: string
@@ -176,16 +195,20 @@ export type Database = {
           warmup_countdown_at?: string | null
           warmup_description?: string | null
           warmup_label?: string | null
+          work_visibility_requirement?: Database["public"]["Enums"]["work_visibility_requirement"]
         }
         Update: {
+          ai_policy?: Database["public"]["Enums"]["ai_policy"]
           allow_early_submission?: boolean
           cover_url?: string | null
           created_at?: string
+          creation_time_requirement?: Database["public"]["Enums"]["creation_time_requirement"]
           description?: string | null
           enable_warmup?: boolean
           event_id?: string | null
           host_id?: string
           id?: string
+          ownership_verification_requirement?: Database["public"]["Enums"]["ownership_verification_requirement"]
           rules?: string | null
           show_warmup_countdown?: boolean
           slug?: string
@@ -196,6 +219,7 @@ export type Database = {
           warmup_countdown_at?: string | null
           warmup_description?: string | null
           warmup_label?: string | null
+          work_visibility_requirement?: Database["public"]["Enums"]["work_visibility_requirement"]
         }
         Relationships: [
           {
@@ -620,12 +644,14 @@ export type Database = {
           bpm: number | null
           cover_url: string | null
           created_at: string
+          creation_proof_at: string | null
           creator_id: string
           description: string | null
           embed_url: string | null
           genre: string | null
           id: string
           lyrics: string | null
+          rights_confirmed: boolean
           rights_statement: string | null
           slug: string
           source_type: Database["public"]["Enums"]["track_source"]
@@ -634,6 +660,11 @@ export type Database = {
           title: string
           tools_used: string | null
           updated_at: string
+          verification_code: string | null
+          verification_method: Database["public"]["Enums"]["track_verification_method"]
+          verification_note: string | null
+          verification_status: Database["public"]["Enums"]["track_verification_status"]
+          verified_at: string | null
         }
         Insert: {
           ai_disclosure?: string | null
@@ -641,12 +672,14 @@ export type Database = {
           bpm?: number | null
           cover_url?: string | null
           created_at?: string
+          creation_proof_at?: string | null
           creator_id: string
           description?: string | null
           embed_url?: string | null
           genre?: string | null
           id?: string
           lyrics?: string | null
+          rights_confirmed?: boolean
           rights_statement?: string | null
           slug: string
           source_type: Database["public"]["Enums"]["track_source"]
@@ -655,6 +688,11 @@ export type Database = {
           title: string
           tools_used?: string | null
           updated_at?: string
+          verification_code?: string | null
+          verification_method?: Database["public"]["Enums"]["track_verification_method"]
+          verification_note?: string | null
+          verification_status?: Database["public"]["Enums"]["track_verification_status"]
+          verified_at?: string | null
         }
         Update: {
           ai_disclosure?: string | null
@@ -662,12 +700,14 @@ export type Database = {
           bpm?: number | null
           cover_url?: string | null
           created_at?: string
+          creation_proof_at?: string | null
           creator_id?: string
           description?: string | null
           embed_url?: string | null
           genre?: string | null
           id?: string
           lyrics?: string | null
+          rights_confirmed?: boolean
           rights_statement?: string | null
           slug?: string
           source_type?: Database["public"]["Enums"]["track_source"]
@@ -676,6 +716,11 @@ export type Database = {
           title?: string
           tools_used?: string | null
           updated_at?: string
+          verification_code?: string | null
+          verification_method?: Database["public"]["Enums"]["track_verification_method"]
+          verification_note?: string | null
+          verification_status?: Database["public"]["Enums"]["track_verification_status"]
+          verified_at?: string | null
         }
         Relationships: []
       }
@@ -767,6 +812,10 @@ export type Database = {
           vote_id: string
         }[]
       }
+      confirm_track_verification: {
+        Args: { _found_text: string; _track_id: string }
+        Returns: Database["public"]["Enums"]["track_verification_status"]
+      }
       get_round_entries: {
         Args: { _round_id: string }
         Returns: {
@@ -799,7 +848,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      request_track_verification: {
+        Args: { _track_id: string }
+        Returns: string
+      }
       settle_round: { Args: { _round_id: string }; Returns: undefined }
+      submit_to_competition: {
+        Args: { _round_id: string; _track_id: string; _user_confirmed: boolean }
+        Returns: string
+      }
     }
     Enums: {
       advancement_rule:
@@ -808,6 +865,11 @@ export type Database = {
         | "judge_pick"
         | "host_manual"
         | "mixed"
+      ai_policy:
+        | "allowed_disclosed"
+        | "ai_only"
+        | "human_only"
+        | "hybrid_allowed"
       app_role: "admin" | "host" | "user"
       author_visibility_mode:
         | "public_all_the_time"
@@ -821,6 +883,11 @@ export type Database = {
         | "final_tallying"
         | "final_results_published"
         | "archived"
+      creation_time_requirement:
+        | "no_limit"
+        | "after_competition_start"
+        | "within_submission_window"
+        | "manual_proof_required"
       event_status:
         | "draft"
         | "scheduled"
@@ -837,6 +904,12 @@ export type Database = {
         | "final_reveal_live"
         | "radio_show"
         | "challenge"
+      ownership_verification_requirement:
+        | "none"
+        | "claim_code"
+        | "oauth_required"
+        | "manual_review"
+        | "oauth_or_manual"
       round_entry_status:
         | "pending"
         | "approved"
@@ -866,6 +939,19 @@ export type Database = {
         | "upload"
         | "external"
       track_status: "draft" | "published" | "removed"
+      track_verification_method:
+        | "none"
+        | "claim_code"
+        | "youtube_oauth"
+        | "soundcloud_oauth"
+        | "manual_review"
+      track_verification_status:
+        | "unverified"
+        | "pending_claim_code"
+        | "verified_claim_code"
+        | "verified_official"
+        | "manual_review_required"
+        | "rejected"
       vote_count_visibility:
         | "hidden_until_round_end"
         | "live_count"
@@ -880,6 +966,10 @@ export type Database = {
         | "public_voter_name"
         | "anonymous_to_public"
         | "admin_only"
+      work_visibility_requirement:
+        | "public_allowed"
+        | "unlisted_allowed"
+        | "private_submission_only"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1014,6 +1104,12 @@ export const Constants = {
         "host_manual",
         "mixed",
       ],
+      ai_policy: [
+        "allowed_disclosed",
+        "ai_only",
+        "human_only",
+        "hybrid_allowed",
+      ],
       app_role: ["admin", "host", "user"],
       author_visibility_mode: [
         "public_all_the_time",
@@ -1028,6 +1124,12 @@ export const Constants = {
         "final_tallying",
         "final_results_published",
         "archived",
+      ],
+      creation_time_requirement: [
+        "no_limit",
+        "after_competition_start",
+        "within_submission_window",
+        "manual_proof_required",
       ],
       event_status: [
         "draft",
@@ -1046,6 +1148,13 @@ export const Constants = {
         "final_reveal_live",
         "radio_show",
         "challenge",
+      ],
+      ownership_verification_requirement: [
+        "none",
+        "claim_code",
+        "oauth_required",
+        "manual_review",
+        "oauth_or_manual",
       ],
       round_entry_status: [
         "pending",
@@ -1079,6 +1188,21 @@ export const Constants = {
         "external",
       ],
       track_status: ["draft", "published", "removed"],
+      track_verification_method: [
+        "none",
+        "claim_code",
+        "youtube_oauth",
+        "soundcloud_oauth",
+        "manual_review",
+      ],
+      track_verification_status: [
+        "unverified",
+        "pending_claim_code",
+        "verified_claim_code",
+        "verified_official",
+        "manual_review_required",
+        "rejected",
+      ],
       vote_count_visibility: [
         "hidden_until_round_end",
         "live_count",
@@ -1095,6 +1219,11 @@ export const Constants = {
         "public_voter_name",
         "anonymous_to_public",
         "admin_only",
+      ],
+      work_visibility_requirement: [
+        "public_allowed",
+        "unlisted_allowed",
+        "private_submission_only",
       ],
     },
   },

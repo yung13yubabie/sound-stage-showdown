@@ -14,19 +14,18 @@ export function MediaEmbed({
   coverUrl,
   title = "音樂作品",
 }: {
-  url: string;
+  url?: string | null;
   audioUrl?: string | null;
   coverUrl?: string | null;
   title?: string;
 }) {
   const [active, setActive] = useState(false);
-  const embed = toMediaEmbed(url);
+  const embed = url ? toMediaEmbed(url) : null;
 
-  // Suno / Udio:優先 inline audio
-  const inlineAudio =
-    audioUrl && /^https:\/\//.test(audioUrl) && (embed?.kind === "suno" || embed?.kind === "udio")
-      ? audioUrl
-      : null;
+  // 任何 audioUrl (上傳/外部直連 mp3/Suno/Udio) 優先 inline 播放
+  const isDirectAudio = !!audioUrl && /^https:\/\//.test(audioUrl) && /\.(mp3|wav|m4a|ogg)(\?|$)/i.test(audioUrl);
+  const isSunoUdio = embed?.kind === "suno" || embed?.kind === "udio";
+  const inlineAudio = audioUrl && /^https:\/\//.test(audioUrl) && (isSunoUdio || isDirectAudio) ? audioUrl : null;
 
   if (inlineAudio) {
     return (
@@ -42,14 +41,16 @@ export function MediaEmbed({
         <audio src={inlineAudio} controls preload="none" className="w-full">
           您的瀏覽器不支援音訊播放。
         </audio>
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 inline-flex items-center gap-1 text-[11px] uppercase tracking-widest text-muted-foreground hover:text-ember"
-        >
-          <ExternalLink className="h-3 w-3" /> 原始平台頁面
-        </a>
+        {url && (
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center gap-1 text-[11px] uppercase tracking-widest text-muted-foreground hover:text-ember"
+          >
+            <ExternalLink className="h-3 w-3" /> 原始平台頁面
+          </a>
+        )}
       </div>
     );
   }
@@ -73,7 +74,7 @@ export function MediaEmbed({
           這首作品目前無法在站內播放(來源平台未提供可內嵌音檔)。重新貼一次連結讓系統再抓一次,或直接到原始頁面收聽。
         </p>
         <a
-          href={embed.kind === "link" ? embed.href : url}
+          href={embed.kind === "link" ? embed.href : (url ?? "#")}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex w-fit items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-cream hover:border-ember"

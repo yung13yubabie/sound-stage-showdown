@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { MediaEmbed } from "@/components/MediaEmbed";
+import { VerificationBadge } from "@/components/VerificationBadge";
+import { useAuth } from "@/lib/auth-context";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/tracks/$slug")({
   component: TrackDetail,
@@ -10,6 +13,7 @@ export const Route = createFileRoute("/tracks/$slug")({
 
 function TrackDetail() {
   const { slug } = Route.useParams();
+  const { user } = useAuth();
   const { data: track, isLoading } = useQuery({
     queryKey: ["track", slug],
     queryFn: async () => {
@@ -40,15 +44,23 @@ function TrackDetail() {
         )}
         <div className="min-w-0 flex-1">
           <h1 className="font-display text-4xl text-cream">{track.title}</h1>
-          {track.genre && <p className="mt-1 text-sm text-ember">{track.genre}</p>}
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {track.genre && <span className="text-sm text-ember">{track.genre}</span>}
+            <VerificationBadge status={track.verification_status} />
+            {user?.id === track.creator_id && (
+              <Button asChild size="sm" variant="outline">
+                <Link to="/tracks/$slug/verify" params={{ slug: track.slug }}>
+                  <ShieldCheck className="mr-1 h-3 w-3" /> 驗證所有權
+                </Link>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
-      {track.source_url && (
-        <div className="mt-6">
-          <MediaEmbed url={track.source_url} audioUrl={track.embed_url} coverUrl={track.cover_url} title={track.title} />
-        </div>
-      )}
+      <div className="mt-6">
+        <MediaEmbed url={track.source_url} audioUrl={track.embed_url ?? track.audio_file_url} coverUrl={track.cover_url} title={track.title} />
+      </div>
 
 
       {track.description && <p className="mt-6 whitespace-pre-wrap text-muted-foreground">{track.description}</p>}
