@@ -1,30 +1,23 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestIP } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { safeFetchText } from "./safe-fetch.server";
 
 /**
  * 從 SUNO / Udio / YouTube / SoundCloud 的公開頁面抓 Open Graph 元數據,
- * 用來自動帶入作品標題、封面、簡介。
+ * 用來自動帶入作品標題、封面、簡介、平台發布時間。
  *
- * 注意:
- * - 走伺服端 fetch，避開 CORS,也不暴露 API key (純公開 HTML 抓取)。
- * - 對外請求加 8 秒 timeout、限制 hostname 白名單,避免 SSRF。
- * - 失敗就回空物件,不丟錯,讓表單可繼續手動填寫。
+ * SSRF 防護:
+ * - 走 safeFetchText: 手動 redirect + 每跳重驗白名單 + 阻擋私網 IP
+ * - 8 秒 timeout、300KB 回應上限
+ * - per-IP rate limit
  */
 
 const ALLOWED_HOSTS = new Set([
-  "suno.com",
-  "www.suno.com",
-  "udio.com",
-  "www.udio.com",
-  "soundcloud.com",
-  "www.soundcloud.com",
-  "m.soundcloud.com",
-  "on.soundcloud.com",
-  "youtube.com",
-  "www.youtube.com",
-  "m.youtube.com",
-  "music.youtube.com",
-  "youtu.be",
+  "suno.com", "www.suno.com",
+  "udio.com", "www.udio.com",
+  "soundcloud.com", "www.soundcloud.com", "m.soundcloud.com", "on.soundcloud.com",
+  "youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be",
 ]);
 
 const inputSchema = z.object({ url: z.string().url().max(500) });
