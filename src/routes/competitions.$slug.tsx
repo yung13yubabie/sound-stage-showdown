@@ -71,6 +71,8 @@ function CompetitionDetail() {
           </div>
         )}
 
+        <CompetitionRulesSummary comp={competition} />
+
         {competition.rules && (
           <details className="mt-6 rounded-lg border border-border bg-stage p-4">
             <summary className="cursor-pointer font-medium text-cream">比賽規則</summary>
