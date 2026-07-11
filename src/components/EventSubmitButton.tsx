@@ -29,10 +29,12 @@ export function EventSubmitButton({ eventId }: { eventId: string }) {
     mutationFn: async () => {
       if (!user || !selected) throw new Error("請先選擇作品");
       if (!agreed) throw new Error("請先勾選確認聲明");
-      const { error } = await supabase.from("event_submissions").insert({
-        event_id: eventId,
-        creator_id: user.id,
-        track_id: selected,
+      const { error } = await (supabase as unknown as {
+        rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: string | null; error: Error | null }>;
+      }).rpc("submit_to_event", {
+        _event_id: eventId,
+        _track_id: selected,
+        _user_confirmed: agreed,
       });
       if (error) throw error;
     },
@@ -40,6 +42,7 @@ export function EventSubmitButton({ eventId }: { eventId: string }) {
       toast.success("投稿送出,等待主辦人審核");
       setOpen(false);
       setSelected(null);
+      setAgreed(false);
       qc.invalidateQueries({ queryKey: ["event-submissions", eventId] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "投稿失敗"),

@@ -1,30 +1,23 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestIP } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { safeFetchText } from "./safe-fetch.server";
 
 /**
  * 從 SUNO / Udio / YouTube / SoundCloud 的公開頁面抓 Open Graph 元數據,
- * 用來自動帶入作品標題、封面、簡介。
+ * 用來自動帶入作品標題、封面、簡介、平台發布時間。
  *
- * 注意:
- * - 走伺服端 fetch，避開 CORS,也不暴露 API key (純公開 HTML 抓取)。
- * - 對外請求加 8 秒 timeout、限制 hostname 白名單,避免 SSRF。
- * - 失敗就回空物件,不丟錯,讓表單可繼續手動填寫。
+ * SSRF 防護:
+ * - 走 safeFetchText: 手動 redirect + 每跳重驗白名單 + 阻擋私網 IP
+ * - 8 秒 timeout、300KB 回應上限
+ * - per-IP rate limit
  */
 
 const ALLOWED_HOSTS = new Set([
-  "suno.com",
-  "www.suno.com",
-  "udio.com",
-  "www.udio.com",
-  "soundcloud.com",
-  "www.soundcloud.com",
-  "m.soundcloud.com",
-  "on.soundcloud.com",
-  "youtube.com",
-  "www.youtube.com",
-  "m.youtube.com",
-  "music.youtube.com",
-  "youtu.be",
+  "suno.com", "www.suno.com",
+  "udio.com", "www.udio.com",
+  "soundcloud.com", "www.soundcloud.com", "m.soundcloud.com", "on.soundcloud.com",
+  "youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be",
 ]);
 
 const inputSchema = z.object({ url: z.string().url().max(500) });
@@ -110,28 +103,13 @@ export const fetchTrackMetadata = createServerFn({ method: "POST" })
           ? "soundcloud"
           : "youtube";
 
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
-    let html = "";
-    try {
-      const res = await fetch(parsed.toString(), {
-        method: "GET",
-        signal: ctrl.signal,
-        redirect: "follow",
-        headers: {
-          "user-agent":
-            "Mozilla/5.0 (compatible; SoundArenaBot/1.0; +https://sound-stage-showdown.lovable.app)",
-          accept: "text/html,application/xhtml+xml",
-          "accept-language": "zh-TW,zh;q=0.9,en;q=0.8",
-        },
-      });
-      if (!res.ok) return { ok: false, source };
-      html = (await res.text()).slice(0, 250_000); // 安全上限
-    } catch {
-      return { ok: false, source };
-    } finally {
-      clearTimeout(timer);
-    }
+    let ip = "unknown";
+    try { ip = getRequestIP({ xForwardedFor: true }) ?? "unknown"; } catch { /* ignore */ }
+    const html = await safeFetchText(parsed.toString(), {
+      allowedHosts: ALLOWED_HOSTS,
+      rateLimitKey: `meta:${ip}`,
+    });
+    if (!html) return { ok: false, source };
 
     const rawTitle =
       metaFromHtml(html, "og:title") ??

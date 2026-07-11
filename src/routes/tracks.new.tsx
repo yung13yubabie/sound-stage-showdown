@@ -57,6 +57,9 @@ function NewTrack() {
     title: "", source_type: "youtube" as TrackSource,
     source_url: "", embed_url: "",
     description: "", genre: "", lyrics: "", ai_disclosure: "", cover_url: "",
+    ai_usage_mode: "unknown" as "none" | "assisted" | "generated" | "hybrid" | "unknown",
+    visibility: "public" as "public" | "unlisted" | "private" | "competition_locked",
+    creation_proof_at: "" as string,
   });
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
@@ -85,6 +88,7 @@ function NewTrack() {
         embed_url: f.embed_url || meta.audio_url || "",
         genre: f.genre || meta.genre || "",
         lyrics: f.lyrics || meta.lyrics || "",
+        creation_proof_at: f.creation_proof_at || meta.published_at || "",
       }));
       const parts = [
         meta.title && "標題", meta.cover_url && "封面", meta.audio_url && "可內嵌音檔",
@@ -122,7 +126,9 @@ function NewTrack() {
     setLoading(true);
     try {
       const slug = `${parsed.data.title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").slice(0, 60)}-${Math.random().toString(36).slice(2, 8)}`;
-      const { error } = await supabase.from("tracks").insert({
+      const { error } = await (supabase.from("tracks") as unknown as {
+        insert: (v: Record<string, unknown>) => Promise<{ error: Error | null }>;
+      }).insert({
         creator_id: user.id,
         title: parsed.data.title,
         slug,
@@ -134,6 +140,9 @@ function NewTrack() {
         genre: parsed.data.genre || null,
         lyrics: parsed.data.lyrics || null,
         ai_disclosure: parsed.data.ai_disclosure || null,
+        ai_usage_mode: form.ai_usage_mode,
+        visibility: form.visibility,
+        creation_proof_at: form.creation_proof_at ? new Date(form.creation_proof_at).toISOString() : null,
         cover_url: parsed.data.cover_url || null,
         status: "published",
       });
@@ -249,8 +258,38 @@ function NewTrack() {
           <Textarea value={form.lyrics} onChange={(e) => setForm({ ...form, lyrics: e.target.value })} rows={6} maxLength={8000} />
         </div>
         <div>
-          <Label>AI 使用揭露</Label>
+          <Label>AI 使用狀態</Label>
+          <Select value={form.ai_usage_mode} onValueChange={(v) => setForm({ ...form, ai_usage_mode: v as typeof form.ai_usage_mode })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">完全人創作</SelectItem>
+              <SelectItem value="assisted">AI 輔助</SelectItem>
+              <SelectItem value="generated">AI 生成</SelectItem>
+              <SelectItem value="hybrid">人+AI 混合</SelectItem>
+              <SelectItem value="unknown">未指定</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>AI 使用揭露 (詳細說明)</Label>
           <Input value={form.ai_disclosure} onChange={(e) => setForm({ ...form, ai_disclosure: e.target.value })} maxLength={200} placeholder="例:Suno v4 生成 + 後製混音" />
+        </div>
+        <div>
+          <Label>作品可見度</Label>
+          <Select value={form.visibility} onValueChange={(v) => setForm({ ...form, visibility: v as typeof form.visibility })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="public">公開 (探索頁可看到)</SelectItem>
+              <SelectItem value="unlisted">未列出 (僅分享連結可讀)</SelectItem>
+              <SelectItem value="private">私密 (只有作者)</SelectItem>
+              <SelectItem value="competition_locked">比賽鎖定</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>創作時間證明 (可選)</Label>
+          <Input type="datetime-local" value={form.creation_proof_at ? form.creation_proof_at.slice(0, 16) : ""} onChange={(e) => setForm({ ...form, creation_proof_at: e.target.value })} />
+          <p className="mt-1 text-xs text-muted-foreground">來自來源平台的發布時間 ≠ 真正創作時間;有時間限制的比賽會以此為判斷。</p>
         </div>
         <Button type="submit" disabled={loading || fetching} className="w-full bg-gradient-ember text-primary-foreground">
           {loading ? "建立中..." : "建立作品"}

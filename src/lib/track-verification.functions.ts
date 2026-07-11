@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestIP } from "@tanstack/react-start/server";
 import { z } from "zod";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { safeFetchText } from "./safe-fetch.server";
 
 /**
  * Track ownership verification via "claim code":
@@ -18,31 +18,6 @@ const ALLOWED_HOSTS = new Set([
   "soundcloud.com", "www.soundcloud.com", "m.soundcloud.com", "on.soundcloud.com",
   "youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be",
 ]);
-
-async function fetchPageText(url: string): Promise<string> {
-  let parsed: URL;
-  try { parsed = new URL(url); } catch { return ""; }
-  if (parsed.protocol !== "https:") return "";
-  if (!ALLOWED_HOSTS.has(parsed.hostname.toLowerCase())) return "";
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 8000);
-  try {
-    const res = await fetch(parsed.toString(), {
-      signal: ctrl.signal,
-      redirect: "follow",
-      headers: {
-        "user-agent": "Mozilla/5.0 (compatible; SoundArenaBot/1.0)",
-        accept: "text/html,application/xhtml+xml",
-      },
-    });
-    if (!res.ok) return "";
-    return (await res.text()).slice(0, 300_000);
-  } catch {
-    return "";
-  } finally {
-    clearTimeout(timer);
-  }
-}
 
 export const requestTrackVerification = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -68,18 +43,14 @@ export const confirmTrackVerification = createServerFn({ method: "POST" })
     if (track.creator_id !== context.userId) throw new Error("非作品擁有者");
     if (!track.source_url) throw new Error("作品沒有來源 URL,無法用站外驗證碼驗證");
 
-    // Use publishable-key client to keep handler tight; server fetch the source page.
-    const html = await fetchPageText(track.source_url);
+    let ip = "unknown";
+    try { ip = getRequestIP({ xForwardedFor: true }) ?? "unknown"; } catch { /* ignore */ }
+    const html = await safeFetchText(track.source_url, {
+      allowedHosts: ALLOWED_HOSTS,
+      rateLimitKey: `verify:${context.userId}:${ip}`,
+    });
 
-    // Pass raw text to RPC. RPC does the substring match (so client can't lie).
-    const supaPublic = createClient<Database>(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-    );
-    // RPC needs to run as the user so it can authorize creator_id check.
-    // We re-use context.supabase (already user-scoped via bearer token).
-    void supaPublic;
+    // RPC uses user-scoped supabase (bearer). Server-side substring match happens inside the RPC.
     const { data: status, error: rErr } = await context.supabase.rpc("confirm_track_verification", {
       _track_id: data.trackId,
       _found_text: html,

@@ -71,6 +71,8 @@ function CompetitionDetail() {
           </div>
         )}
 
+        <CompetitionRulesSummary comp={competition} />
+
         {competition.rules && (
           <details className="mt-6 rounded-lg border border-border bg-stage p-4">
             <summary className="cursor-pointer font-medium text-cream">比賽規則</summary>
@@ -92,5 +94,47 @@ function CompetitionDetail() {
         )}
       </section>
     </article>
+  );
+}
+
+const OWNERSHIP_LABEL: Record<string, string> = {
+  none: "不要求所有權驗證",
+  claim_code: "需驗證碼或官方驗證",
+  oauth_required: "僅接受官方 OAuth 驗證",
+  manual_review: "僅接受人工審核",
+  oauth_or_manual: "OAuth 或人工審核",
+};
+const AI_LABEL: Record<string, string> = {
+  any: "AI 不限制",
+  allowed_disclosed: "允許 AI 但須揭露",
+  human_only: "只接受純人創作",
+  ai_only: "只接受 AI 相關作品",
+};
+const VIS_LABEL: Record<string, string> = {
+  public_ok: "公開作品可投稿",
+  private_submission_only: "僅接受未公開作品",
+};
+const TIME_LABEL: Record<string, string> = {
+  any: "創作時間不限",
+  after_competition_start: "須比賽開始後創作",
+  within_submission_window: "須投稿期間內創作",
+};
+
+function CompetitionRulesSummary({ comp }: { comp: Record<string, unknown> }) {
+  const items = [
+    VIS_LABEL[String(comp.work_visibility_requirement ?? "public_ok")],
+    TIME_LABEL[String(comp.creation_time_requirement ?? "any")],
+    OWNERSHIP_LABEL[String(comp.ownership_verification_requirement ?? "none")],
+    AI_LABEL[String(comp.ai_policy ?? "any")],
+  ].filter(Boolean);
+  if (items.length === 0) return null;
+  return (
+    <div className="mt-6 flex flex-wrap gap-2">
+      {items.map((label) => (
+        <span key={label} className="rounded-full border border-border bg-stage px-3 py-1 text-xs text-cream">
+          {label}
+        </span>
+      ))}
+    </div>
   );
 }

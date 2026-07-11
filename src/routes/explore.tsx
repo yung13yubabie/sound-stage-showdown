@@ -18,7 +18,7 @@ function Explore() {
   const { data } = useQuery({
     queryKey: ["explore-tracks"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("tracks").select("*").eq("status", "published").order("created_at", { ascending: false }).limit(40);
+      const { data, error } = await supabase.from("tracks").select("*").eq("status", "published").eq("visibility", "public").order("created_at", { ascending: false }).limit(40);
       if (error) throw error;
       return data;
     },
