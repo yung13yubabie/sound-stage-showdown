@@ -103,28 +103,13 @@ export const fetchTrackMetadata = createServerFn({ method: "POST" })
           ? "soundcloud"
           : "youtube";
 
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
-    let html = "";
-    try {
-      const res = await fetch(parsed.toString(), {
-        method: "GET",
-        signal: ctrl.signal,
-        redirect: "follow",
-        headers: {
-          "user-agent":
-            "Mozilla/5.0 (compatible; SoundArenaBot/1.0; +https://sound-stage-showdown.lovable.app)",
-          accept: "text/html,application/xhtml+xml",
-          "accept-language": "zh-TW,zh;q=0.9,en;q=0.8",
-        },
-      });
-      if (!res.ok) return { ok: false, source };
-      html = (await res.text()).slice(0, 250_000); // 安全上限
-    } catch {
-      return { ok: false, source };
-    } finally {
-      clearTimeout(timer);
-    }
+    let ip = "unknown";
+    try { ip = getRequestIP({ xForwardedFor: true }) ?? "unknown"; } catch { /* ignore */ }
+    const html = await safeFetchText(parsed.toString(), {
+      allowedHosts: ALLOWED_HOSTS,
+      rateLimitKey: `meta:${ip}`,
+    });
+    if (!html) return { ok: false, source };
 
     const rawTitle =
       metaFromHtml(html, "og:title") ??
