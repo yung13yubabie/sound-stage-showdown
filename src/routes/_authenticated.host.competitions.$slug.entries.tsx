@@ -97,7 +97,9 @@ function RoundReview({ round, onSettle, settling }: { round: { id: string; round
 
   const review = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "approved" | "rejected" }) => {
-      const { error } = await supabase.from("round_entries").update({ status }).eq("id", id);
+      const { error } = await (supabase as unknown as {
+        rpc: (fn: string, args: Record<string, unknown>) => Promise<{ error: Error | null }>;
+      }).rpc("review_round_entry", { _entry_id: id, _decision: status, _review_note: null });
       if (error) throw error;
     },
     onSuccess: () => {
