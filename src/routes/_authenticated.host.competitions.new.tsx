@@ -126,6 +126,60 @@ function NewCompetition() {
           )}
         </div>
 
+        <div className="space-y-4 rounded-xl border border-border bg-stage p-4">
+          <div>
+            <Label className="text-cream">投稿資格規則</Label>
+            <p className="text-xs text-muted-foreground">這些規則會在使用者投稿時由系統強制檢查,無法用前端繞過。</p>
+          </div>
+          <div>
+            <Label>作品公開狀態</Label>
+            <Select value={form.work_visibility_requirement} onValueChange={(v) => set("work_visibility_requirement", v as typeof form.work_visibility_requirement)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="public_ok">公開作品可投稿</SelectItem>
+                <SelectItem value="private_submission_only">僅接受未公開作品</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>創作時間</Label>
+            <Select value={form.creation_time_requirement} onValueChange={(v) => set("creation_time_requirement", v as typeof form.creation_time_requirement)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">不限制</SelectItem>
+                <SelectItem value="after_competition_start">須在本比賽開始後創作</SelectItem>
+                <SelectItem value="within_submission_window">須在投稿期間內創作</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="mt-1 text-xs text-muted-foreground">系統以來源平台的發布時間為證明;無法取得則此比賽不接受該作品。</p>
+          </div>
+          <div>
+            <Label>所有權驗證</Label>
+            <Select value={form.ownership_verification_requirement} onValueChange={(v) => set("ownership_verification_requirement", v as typeof form.ownership_verification_requirement)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">不要求</SelectItem>
+                <SelectItem value="claim_code">驗證碼或官方驗證</SelectItem>
+                <SelectItem value="oauth_required">僅接受官方 OAuth 驗證</SelectItem>
+                <SelectItem value="manual_review">僅接受人工審核</SelectItem>
+                <SelectItem value="oauth_or_manual">OAuth 或人工審核</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>AI 使用政策</Label>
+            <Select value={form.ai_policy} onValueChange={(v) => set("ai_policy", v as typeof form.ai_policy)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">不限制</SelectItem>
+                <SelectItem value="allowed_disclosed">允許但須揭露</SelectItem>
+                <SelectItem value="human_only">只接受純人創作</SelectItem>
+                <SelectItem value="ai_only">只接受 AI 相關作品</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between rounded-xl border border-border bg-stage p-4">
           <div>
             <Label className="text-cream">立即發布</Label>
