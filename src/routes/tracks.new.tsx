@@ -126,7 +126,9 @@ function NewTrack() {
     setLoading(true);
     try {
       const slug = `${parsed.data.title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").slice(0, 60)}-${Math.random().toString(36).slice(2, 8)}`;
-      const { error } = await supabase.from("tracks").insert({
+      const { error } = await (supabase.from("tracks") as unknown as {
+        insert: (v: Record<string, unknown>) => Promise<{ error: Error | null }>;
+      }).insert({
         creator_id: user.id,
         title: parsed.data.title,
         slug,
@@ -138,6 +140,9 @@ function NewTrack() {
         genre: parsed.data.genre || null,
         lyrics: parsed.data.lyrics || null,
         ai_disclosure: parsed.data.ai_disclosure || null,
+        ai_usage_mode: form.ai_usage_mode,
+        visibility: form.visibility,
+        creation_proof_at: form.creation_proof_at ? new Date(form.creation_proof_at).toISOString() : null,
         cover_url: parsed.data.cover_url || null,
         status: "published",
       });
