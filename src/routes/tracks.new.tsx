@@ -88,6 +88,7 @@ function NewTrack() {
         embed_url: f.embed_url || meta.audio_url || "",
         genre: f.genre || meta.genre || "",
         lyrics: f.lyrics || meta.lyrics || "",
+        creation_proof_at: f.creation_proof_at || meta.published_at || "",
       }));
       const parts = [
         meta.title && "標題", meta.cover_url && "封面", meta.audio_url && "可內嵌音檔",
