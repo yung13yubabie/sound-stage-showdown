@@ -57,6 +57,9 @@ function NewTrack() {
     title: "", source_type: "youtube" as TrackSource,
     source_url: "", embed_url: "",
     description: "", genre: "", lyrics: "", ai_disclosure: "", cover_url: "",
+    ai_usage_mode: "unknown" as "none" | "assisted" | "generated" | "hybrid" | "unknown",
+    visibility: "public" as "public" | "unlisted" | "private" | "competition_locked",
+    creation_proof_at: "" as string,
   });
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
