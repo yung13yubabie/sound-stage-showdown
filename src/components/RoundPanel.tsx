@@ -177,11 +177,12 @@ function EntryCard({ entry, index, anonymous, voted, canVote, showCount, onVote,
   );
 }
 
-function RoundSubmitButton({ roundId, competitionId }: { roundId: string; competitionId: string }) {
+function RoundSubmitButton({ roundId }: { roundId: string; competitionId: string }) {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
+  const [agreed, setAgreed] = useState(false);
 
   const { data: tracks } = useQuery({
     queryKey: ["my-tracks-for-round", user?.id],
@@ -197,20 +198,22 @@ function RoundSubmitButton({ roundId, competitionId }: { roundId: string; compet
   const submit = useMutation({
     mutationFn: async () => {
       if (!user || !selected) throw new Error("請選擇作品");
-      const code = `A${Math.random().toString(36).slice(2, 5).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
-      const { error } = await supabase.from("round_entries").insert({
-        round_id: roundId,
-        competition_id: competitionId,
-        track_id: selected,
-        creator_id: user.id,
-        anonymous_code: code,
+      if (!agreed) throw new Error("請先勾選確認聲明");
+      const { data, error } = await (supabase as unknown as {
+        rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: string | null; error: Error | null }>;
+      }).rpc("submit_to_competition", {
+        _round_id: roundId,
+        _track_id: selected,
+        _user_confirmed: agreed,
       });
       if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       toast.success("已投稿,等待主辦人核可");
       setOpen(false);
       setSelected(null);
+      setAgreed(false);
       qc.invalidateQueries({ queryKey: ["round-entries", roundId] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "投稿失敗"),
@@ -244,7 +247,11 @@ function RoundSubmitButton({ roundId, competitionId }: { roundId: string; compet
             <Button asChild className="mt-3 bg-gradient-ember text-primary-foreground"><Link to="/tracks/new">先建立作品</Link></Button>
           </div>
         )}
-        <Button onClick={() => submit.mutate()} disabled={!selected || submit.isPending} className="w-full bg-gradient-ember text-primary-foreground">
+        <label className="flex items-start gap-2 rounded-lg border border-border bg-stage p-3 text-xs text-muted-foreground">
+          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5" />
+          <span>我確認此作品為本人創作或本人擁有投稿權,並符合本比賽的公開狀態、創作時間與 AI 使用規則。</span>
+        </label>
+        <Button onClick={() => submit.mutate()} disabled={!selected || !agreed || submit.isPending} className="w-full bg-gradient-ember text-primary-foreground">
           {submit.isPending ? "送出中..." : "確認投稿"}
         </Button>
       </DialogContent>
