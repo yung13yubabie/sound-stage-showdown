@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const schema = z.object({
   title: z.string().trim().min(2).max(120),
@@ -18,6 +19,10 @@ const schema = z.object({
   enable_warmup: z.boolean(),
   warmup_countdown_at: z.string().optional(),
   publish: z.boolean(),
+  work_visibility_requirement: z.enum(["public_ok", "private_submission_only"]),
+  creation_time_requirement: z.enum(["any", "after_competition_start", "within_submission_window"]),
+  ownership_verification_requirement: z.enum(["none", "claim_code", "oauth_required", "manual_review", "oauth_or_manual"]),
+  ai_policy: z.enum(["human_only", "allowed_disclosed", "ai_only", "any"]),
 });
 
 export const Route = createFileRoute("/_authenticated/host/competitions/new")({
@@ -41,6 +46,10 @@ function NewCompetition() {
     enable_warmup: false,
     warmup_countdown_at: "",
     publish: true,
+    work_visibility_requirement: "public_ok" as const,
+    creation_time_requirement: "any" as "any" | "after_competition_start" | "within_submission_window",
+    ownership_verification_requirement: "none" as "none" | "claim_code" | "oauth_required" | "manual_review" | "oauth_or_manual",
+    ai_policy: "any" as "human_only" | "allowed_disclosed" | "ai_only" | "any",
   });
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -50,7 +59,7 @@ function NewCompetition() {
     if (!p.success) { toast.error(p.error.issues[0].message); return; }
     setLoading(true);
     try {
-      const { data, error } = await supabase.from("competitions").insert({
+      const insertPayload: Record<string, unknown> = {
         host_id: user!.id,
         title: p.data.title,
         slug: slugify(p.data.title),
@@ -60,10 +69,17 @@ function NewCompetition() {
         status: p.data.publish ? "warmup" : "draft",
         enable_warmup: p.data.enable_warmup,
         warmup_countdown_at: p.data.enable_warmup && p.data.warmup_countdown_at ? new Date(p.data.warmup_countdown_at).toISOString() : null,
-      }).select("slug").single();
+        work_visibility_requirement: p.data.work_visibility_requirement,
+        creation_time_requirement: p.data.creation_time_requirement,
+        ownership_verification_requirement: p.data.ownership_verification_requirement,
+        ai_policy: p.data.ai_policy,
+      };
+      const { data, error } = await (supabase.from("competitions") as unknown as {
+        insert: (v: Record<string, unknown>) => { select: (c: string) => { single: () => Promise<{ data: { slug: string } | null; error: Error | null }> } };
+      }).insert(insertPayload).select("slug").single();
       if (error) throw error;
       toast.success("比賽已建立,接著建立輪次");
-      navigate({ to: "/host/competitions/$slug/rounds", params: { slug: data.slug } });
+      navigate({ to: "/host/competitions/$slug/rounds", params: { slug: data!.slug } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "發生錯誤");
     } finally {
