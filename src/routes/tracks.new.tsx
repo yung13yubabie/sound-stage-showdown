@@ -258,8 +258,38 @@ function NewTrack() {
           <Textarea value={form.lyrics} onChange={(e) => setForm({ ...form, lyrics: e.target.value })} rows={6} maxLength={8000} />
         </div>
         <div>
-          <Label>AI 使用揭露</Label>
+          <Label>AI 使用狀態</Label>
+          <Select value={form.ai_usage_mode} onValueChange={(v) => setForm({ ...form, ai_usage_mode: v as typeof form.ai_usage_mode })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">完全人創作</SelectItem>
+              <SelectItem value="assisted">AI 輔助</SelectItem>
+              <SelectItem value="generated">AI 生成</SelectItem>
+              <SelectItem value="hybrid">人+AI 混合</SelectItem>
+              <SelectItem value="unknown">未指定</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>AI 使用揭露 (詳細說明)</Label>
           <Input value={form.ai_disclosure} onChange={(e) => setForm({ ...form, ai_disclosure: e.target.value })} maxLength={200} placeholder="例:Suno v4 生成 + 後製混音" />
+        </div>
+        <div>
+          <Label>作品可見度</Label>
+          <Select value={form.visibility} onValueChange={(v) => setForm({ ...form, visibility: v as typeof form.visibility })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="public">公開 (探索頁可看到)</SelectItem>
+              <SelectItem value="unlisted">未列出 (僅分享連結可讀)</SelectItem>
+              <SelectItem value="private">私密 (只有作者)</SelectItem>
+              <SelectItem value="competition_locked">比賽鎖定</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>創作時間證明 (可選)</Label>
+          <Input type="datetime-local" value={form.creation_proof_at ? form.creation_proof_at.slice(0, 16) : ""} onChange={(e) => setForm({ ...form, creation_proof_at: e.target.value })} />
+          <p className="mt-1 text-xs text-muted-foreground">來自來源平台的發布時間 ≠ 真正創作時間;有時間限制的比賽會以此為判斷。</p>
         </div>
         <Button type="submit" disabled={loading || fetching} className="w-full bg-gradient-ember text-primary-foreground">
           {loading ? "建立中..." : "建立作品"}
